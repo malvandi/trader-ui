@@ -1,0 +1,10 @@
+<nav class="side-nav">
+  <ul>
+    <li *ngFor="let item of navItems" 
+        (click)="navigateTo(item.path)"
+        [class.active]="router.url.includes(item.path)">
+      <span class="icon">{{ item.icon }}</span>
+      <span class="label">{{ item.label }}</span>
+    </li>
+  </ul>
+</nav>

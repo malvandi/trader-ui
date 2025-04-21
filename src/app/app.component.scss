@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f6fa;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-top: 80px; // Account for header height
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
