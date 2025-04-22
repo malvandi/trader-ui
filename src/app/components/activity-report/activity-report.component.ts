@@ -123,7 +123,7 @@ export class ActivityReportComponent {
   getPercentage(value: number): string {
     if(!value)
       return '0%';
-    return `${value.toFixed(2)}%`;
+    return `${Math.round(value).toLocaleString()}%`;
   }
 
   openChart(rahavardId: number): void {
