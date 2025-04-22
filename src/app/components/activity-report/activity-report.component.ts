@@ -113,7 +113,10 @@ export class ActivityReportComponent {
     return `change.${year}`;
   }
 
-  getValueWithCommas(value: number): string {
+  getValueWithCommas(value: number, isPrice: boolean = false): string {
+    if (isPrice) {
+      return (value / 10000).toFixed(2).toLocaleString();
+    }
     return value.toLocaleString();
   }
 

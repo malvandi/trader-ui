@@ -53,7 +53,7 @@
         <!-- Price Columns -->
         <!-- Domestic Price -->
         <ng-container *ngFor="let year of data.years; let i = index">
-          <td>{{getValueWithCommas(record.domesticSellPrice[year])}}</td>
+          <td>{{getValueWithCommas(record.domesticSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.domesticSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.domesticSellPrice[getChangeYear(year)] < 0">
@@ -63,7 +63,7 @@
 
         <!-- Export Price -->
         <ng-container *ngFor="let year of data.years; let i = index">
-          <td>{{getValueWithCommas(record.exportSellPrice[year])}}</td>
+          <td>{{getValueWithCommas(record.exportSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.exportSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.exportSellPrice[getChangeYear(year)] < 0">
@@ -73,7 +73,7 @@
 
         <!-- Total Price -->
         <ng-container *ngFor="let year of data.years; let i = index">
-          <td>{{getValueWithCommas(record.totalSellPrice[year])}}</td>
+          <td>{{getValueWithCommas(record.totalSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.totalSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.totalSellPrice[getChangeYear(year)] < 0">
