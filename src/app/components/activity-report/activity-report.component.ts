@@ -65,6 +65,42 @@ export class ActivityReportComponent {
           "1403": 1067615,
           "change.1403": 1075.5414615884342
         }
+      },
+      {
+        code: "قشکر 2",
+        rsi: 0,
+        rahavardId: 224,
+        tehranExchangeId: "35964395659427029",
+        domesticSellCount: {
+          "1402": 2000,
+          "1403": 2000,
+          "change.1403": 0
+        },
+        domesticSellPrice: {
+          "1402": 90819,
+          "1403": 1067615,
+          "change.1403": 1075.5414615884342
+        },
+        exportSellCount: {
+          "1402": 2000,
+          "1403": 2000,
+          "change.1403": 0
+        },
+        exportSellPrice: {
+          "1402": 10,
+          "1403": 20,
+          "change.1403": 100
+        },
+        totalSellCount: {
+          "1402": 4000,
+          "1403": 4000,
+          "change.1403": 0
+        },
+        totalSellPrice: {
+          "1402": 90819,
+          "1403": 1067615,
+          "change.1403": 1075.5414615884342
+        }
       }
     ],
     month: 12,

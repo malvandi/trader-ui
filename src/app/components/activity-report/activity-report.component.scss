@@ -1,6 +1,5 @@
 .table-container {
   width: 100%;
-  overflow-x: auto;
   padding: 1rem;
 }
 
@@ -9,17 +8,22 @@
   border-collapse: collapse;
   direction: rtl;
   font-family: 'IRANSans', sans-serif;
+  table-layout: fixed;
 
   th, td {
     padding: 0.75rem;
     text-align: center;
     border: 1px solid #e2e8f0;
+    word-wrap: break-word;
+    white-space: normal;
+    min-width: 100px;
   }
 
   th {
     background-color: #f8fafc;
     font-weight: 600;
     color: #1e293b;
+    vertical-align: middle;
   }
 
   tr:nth-child(even) {
