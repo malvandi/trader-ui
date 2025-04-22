@@ -122,4 +122,8 @@ export class ActivityReportComponent {
       return '0%';
     return `${value.toFixed(2)}%`;
   }
+
+  openChart(rahavardId: number): void {
+    window.open(`https://rahavard365.com/asset/${rahavardId}/chart`, '_blank');
+  }
 }

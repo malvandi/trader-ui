@@ -1,1 +1,63 @@
 /* You can add global styles to this file, and also import other style files */
+
+@font-face {
+  font-family: 'iransansv';
+  src: url('assets/fonts/IRANSansXV.woff') format('woff-variations'),
+  url('assets/fonts/IRANSansXV.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'iransans';
+  src: url('assets/fonts/IRANSansX-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'iransans';
+  src: url('assets/fonts/IRANSansX-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'iransansv', 'iransans', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  font-family: 'iransansv', 'iransans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@supports (font-variation-settings: normal) {
+  body {
+    font-family: 'iransansv', tahoma;
+  }
+}
+
+
+.ss02 {
+  -moz-font-feature-settings: "ss02";
+  -webkit-font-feature-settings: "ss02";
+  font-feature-settings: "ss02";
+}
+.ss03 {
+  -moz-font-feature-settings: "ss03";
+  -webkit-font-feature-settings: "ss03";
+  font-feature-settings: "ss03";
+}
