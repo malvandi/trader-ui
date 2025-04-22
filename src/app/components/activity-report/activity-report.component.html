@@ -1,1 +1,111 @@
-<p>activity-report works!</p>
+<div class="table-container">
+  <table class="activity-table">
+    <thead>
+      <tr>
+        <th rowspan="2">کد</th>
+        <th rowspan="2">RSI</th>
+        <th rowspan="2">شناسه رهاورد</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">تعداد فروش داخلی</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">قیمت فروش داخلی</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">تعداد فروش صادراتی</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">قیمت فروش صادراتی</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">تعداد فروش کل</th>
+        <th [attr.colspan]="data.years.length + (data.years.length - 1)">قیمت فروش کل</th>
+      </tr>
+      <tr>
+        <!-- Dynamic year headers -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <th>{{year}}</th>
+          <th *ngIf="i > 0">تغییرات</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of data.records">
+        <td>{{record.code}}</td>
+        <td>{{record.rsi}}</td>
+        <td>{{record.rahavardId}}</td>
+        
+        <!-- Domestic Sell Count -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.domesticSellCount[year])}}</td>
+          <td *ngIf="i > 0" 
+              [class.change-positive]="record.domesticSellCount[getChangeYear(year)] > 0"
+              [class.change-negative]="record.domesticSellCount[getChangeYear(year)] < 0">
+            {{getPercentage(record.domesticSellCount[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+        
+        <!-- Domestic Sell Price -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.domesticSellPrice[year])}}</td>
+          <td *ngIf="i > 0"
+              [class.change-positive]="record.domesticSellPrice[getChangeYear(year)] > 0"
+              [class.change-negative]="record.domesticSellPrice[getChangeYear(year)] < 0">
+            {{getPercentage(record.domesticSellPrice[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+        
+        <!-- Export Sell Count -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.exportSellCount[year])}}</td>
+          <td *ngIf="i > 0"
+              [class.change-positive]="record.exportSellCount[getChangeYear(year)] > 0"
+              [class.change-negative]="record.exportSellCount[getChangeYear(year)] < 0">
+            {{getPercentage(record.exportSellCount[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+        
+        <!-- Export Sell Price -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.exportSellPrice[year])}}</td>
+          <td *ngIf="i > 0"
+              [class.change-positive]="record.exportSellPrice[getChangeYear(year)] > 0"
+              [class.change-negative]="record.exportSellPrice[getChangeYear(year)] < 0">
+            {{getPercentage(record.exportSellPrice[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+        
+        <!-- Total Sell Count -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.totalSellCount[year])}}</td>
+          <td *ngIf="i > 0"
+              [class.change-positive]="record.totalSellCount[getChangeYear(year)] > 0"
+              [class.change-negative]="record.totalSellCount[getChangeYear(year)] < 0">
+            {{getPercentage(record.totalSellCount[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+        
+        <!-- Total Sell Price -->
+        <ng-container *ngFor="let year of data.years; let i = index">
+          <td>{{getValueWithCommas(record.totalSellPrice[year])}}</td>
+          <td *ngIf="i > 0"
+              [class.change-positive]="record.totalSellPrice[getChangeYear(year)] > 0"
+              [class.change-negative]="record.totalSellPrice[getChangeYear(year)] < 0">
+            {{getPercentage(record.totalSellPrice[getChangeYear(year)])}}
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
