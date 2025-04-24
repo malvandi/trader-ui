@@ -1,14 +1,17 @@
 <div class="table-container ss02">
-  <!-- Debug information -->
+  <div *ngIf="!data?.entries?.length" class="table-loader">
+    <div class="spinner"></div>
+    <span>در حال بارگذاری...</span>
+  </div>
 
-  <table class="activity-table">
+  <table class="activity-table" [class.loading]="!data?.entries?.length">
     <thead>
       <tr>
         <th rowspan="3">کد</th>
         <th rowspan="3">RSI</th>
         <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">قیمت</th>
         <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">تعداد</th>
-        <th rowspan="3">نمودار</th>
+        <th rowspan="3"></th>
       </tr>
       <tr>
         <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">داخلی</th>
@@ -55,7 +58,7 @@
         <!-- Price Columns -->
         <!-- Domestic Price -->
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <td>{{getValueWithCommas(record.domesticSellPrice[year], true)}}</td>
+          <td [title]="getTooltipText(record.domesticSellPrice[year], true)">{{getValueWithCommas(record.domesticSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.domesticSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.domesticSellPrice[getChangeYear(year)] < 0">
@@ -65,7 +68,7 @@
 
         <!-- Export Price -->
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <td>{{getValueWithCommas(record.exportSellPrice[year], true)}}</td>
+          <td [title]="getTooltipText(record.exportSellPrice[year], true)">{{getValueWithCommas(record.exportSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.exportSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.exportSellPrice[getChangeYear(year)] < 0">
@@ -75,7 +78,7 @@
 
         <!-- Total Price -->
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <td>{{getValueWithCommas(record.totalSellPrice[year], true)}}</td>
+          <td [title]="getTooltipText(record.totalSellPrice[year], true)">{{getValueWithCommas(record.totalSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.totalSellPrice[getChangeYear(year)] > 0"
               [class.change-negative]="record.totalSellPrice[getChangeYear(year)] < 0">

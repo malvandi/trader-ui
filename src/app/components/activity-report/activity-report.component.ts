@@ -79,8 +79,30 @@ export class ActivityReportComponent implements OnInit {
     if (value === undefined || value === null) {
       return '0';
     }
+
     if (isPrice) {
-      return (value / 10000).toFixed(2).toLocaleString();
+      const priceInBillions = value / 10000;
+      
+      if (priceInBillions < 10) {
+        return priceInBillions.toFixed(2);
+      } else if (priceInBillions < 100) {
+        return priceInBillions.toFixed(1);
+      } else if (priceInBillions < 1000) {
+        return Math.round(priceInBillions).toString();
+      } else {
+        return Math.round(priceInBillions).toLocaleString();
+      }
+    }
+
+    return value.toLocaleString();
+  }
+
+  getTooltipText(value: number | undefined | null, isPrice: boolean = false): string {
+    if (value === undefined || value === null) {
+      return '0';
+    }
+    if (isPrice) {
+      return `${(value / 10000).toFixed(2)} میلیارد تومان`;
     }
     return value.toLocaleString();
   }
