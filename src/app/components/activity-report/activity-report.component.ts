@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {environment} from '../../../environments/environment';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 interface TableData {
-  records: Array<{
+  entries: Array<{
     code: string;
     rsi: number;
     rahavardId: number;
@@ -21,109 +22,73 @@ interface TableData {
   years: string[];
 }
 
+interface ActivityReportFilter {
+  subset: boolean;
+  years: number[];
+  month: number;
+  period: number;
+}
+
 @Component({
   selector: 'app-activity-report',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './activity-report.component.html',
   styleUrls: ['./activity-report.component.scss']
 })
-export class ActivityReportComponent {
+export class ActivityReportComponent implements OnInit {
   data: TableData = {
-    records: [
-      {
-        code: "قشکر",
-        rsi: 0,
-        rahavardId: 224,
-        tehranExchangeId: "35964395659427029",
-        domesticSellCount: {
-          "1402": 2000,
-          "1403": 2000,
-          "change.1403": 0
-        },
-        domesticSellPrice: {
-          "1402": 90819,
-          "1403": 1067615,
-          "change.1403": 1075.5414615884342
-        },
-        exportSellCount: {
-          "1402": 2000,
-          "1403": 2000,
-          "change.1403": 0
-        },
-        exportSellPrice: {
-          "1402": 10,
-          "1403": 20,
-          "change.1403": 100
-        },
-        totalSellCount: {
-          "1402": 4000,
-          "1403": 4000,
-          "change.1403": 0
-        },
-        totalSellPrice: {
-          "1402": 90819,
-          "1403": 1067615,
-          "change.1403": 1075.5414615884342
-        }
-      },
-      {
-        code: "قشکر 2",
-        rsi: 0,
-        rahavardId: 224,
-        tehranExchangeId: "35964395659427029",
-        domesticSellCount: {
-          "1402": 2000,
-          "1403": 2000,
-          "change.1403": 0
-        },
-        domesticSellPrice: {
-          "1402": 90819,
-          "1403": 1067615,
-          "change.1403": 1075.5414615884342
-        },
-        exportSellCount: {
-          "1402": 2000,
-          "1403": 2000,
-          "change.1403": 0
-        },
-        exportSellPrice: {
-          "1402": 10,
-          "1403": 20,
-          "change.1403": 100
-        },
-        totalSellCount: {
-          "1402": 4000,
-          "1403": 4000,
-          "change.1403": 0
-        },
-        totalSellPrice: {
-          "1402": 90819,
-          "1403": 1067615,
-          "change.1403": 1075.5414615884342
-        }
-      }
-    ],
-    month: 12,
-    period: 1,
-    total: 155,
-    years: ["1402", "1403"]
+    entries: [],
+    month: 0,
+    period: 0,
+    total: 0,
+    years: []
   };
+
+  private filter: ActivityReportFilter = {
+    subset: false,
+    years: [1402, 1403, 1404],
+    month: 12,
+    period: 1
+  };
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.loadActivityReport();
+  }
+
+  loadActivityReport(): void {
+    const url = `${environment.napi}/analyzer/fundamental/activity-report-growth`;
+    this.http.post<TableData>(url, this.filter).subscribe({
+      next: (response) => {
+        console.log('Activity report loaded:', response);
+        this.data = response;
+      },
+      error: (error) => {
+        console.error('Error loading activity report:', error);
+      }
+    });
+  }
 
   getChangeYear(year: string): string {
     return `change.${year}`;
   }
 
-  getValueWithCommas(value: number, isPrice: boolean = false): string {
+  getValueWithCommas(value: number | undefined | null, isPrice: boolean = false): string {
+    if (value === undefined || value === null) {
+      return '0';
+    }
     if (isPrice) {
       return (value / 10000).toFixed(2).toLocaleString();
     }
     return value.toLocaleString();
   }
 
-  getPercentage(value: number): string {
-    if(!value)
+  getPercentage(value: number | undefined | null): string {
+    if (value === undefined || value === null || !value) {
       return '0%';
+    }
     return `${Math.round(value).toLocaleString()}%`;
   }
 

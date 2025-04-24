@@ -1,58 +1,60 @@
 <div class="table-container ss02">
+  <!-- Debug information -->
+
   <table class="activity-table">
     <thead>
       <tr>
         <th rowspan="3">کد</th>
         <th rowspan="3">RSI</th>
-        <th [attr.colspan]="(data.years.length + (data.years.length - 1)) * 3">قیمت</th>
-        <th [attr.colspan]="(data.years.length + (data.years.length - 1)) * 3">تعداد</th>
+        <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">قیمت</th>
+        <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">تعداد</th>
         <th rowspan="3">نمودار</th>
       </tr>
       <tr>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">داخلی</th>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">صادراتی</th>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">کل</th>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">داخلی</th>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">صادراتی</th>
-        <th [attr.colspan]="data.years.length + (data.years.length - 1)">کل</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">داخلی</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">صادراتی</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">کل</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">داخلی</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">صادراتی</th>
+        <th [attr.colspan]="(data?.years?.length || 0) + ((data?.years?.length || 0) - 1)">کل</th>
       </tr>
       <tr>
         <!-- Price Headers -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
         <!-- Count Headers -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <th>{{year}}</th>
-          <th *ngIf="i > 0">تغییرات</th>
+          <th *ngIf="i > 0">%</th>
         </ng-container>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let record of data.records">
+      <tr *ngFor="let record of data?.entries || []">
         <td>{{record.code}}</td>
         <td>{{record.rsi}}</td>
 
         <!-- Price Columns -->
         <!-- Domestic Price -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.domesticSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.domesticSellPrice[getChangeYear(year)] > 0"
@@ -62,7 +64,7 @@
         </ng-container>
 
         <!-- Export Price -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.exportSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.exportSellPrice[getChangeYear(year)] > 0"
@@ -72,7 +74,7 @@
         </ng-container>
 
         <!-- Total Price -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.totalSellPrice[year], true)}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.totalSellPrice[getChangeYear(year)] > 0"
@@ -83,7 +85,7 @@
 
         <!-- Count Columns -->
         <!-- Domestic Count -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.domesticSellCount[year])}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.domesticSellCount[getChangeYear(year)] > 0"
@@ -93,7 +95,7 @@
         </ng-container>
 
         <!-- Export Count -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.exportSellCount[year])}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.exportSellCount[getChangeYear(year)] > 0"
@@ -103,7 +105,7 @@
         </ng-container>
 
         <!-- Total Count -->
-        <ng-container *ngFor="let year of data.years; let i = index">
+        <ng-container *ngFor="let year of data?.years || []; let i = index">
           <td>{{getValueWithCommas(record.totalSellCount[year])}}</td>
           <td *ngIf="i > 0"
               [class.change-positive]="record.totalSellCount[getChangeYear(year)] > 0"
