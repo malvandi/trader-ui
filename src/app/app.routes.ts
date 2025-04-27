@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { ActivityReportComponent } from './components/activity-report/activity-report.component';
-import { GainComponent } from './components/gain/gain.component';
-import { AdminComponent } from './components/admin/admin.component';
-import { StockDetailComponent } from './stock-detail/stock-detail.component';
+import { ActivityReportComponent } from './pages/activity-report/activity-report.component';
+import { GainComponent } from './pages/gain/gain.component';
+import { AdminComponent } from './pages/admin/admin.component';
+import { StockDetailComponent } from './pages/stock-detail/stock-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'activity-report', pathMatch: 'full' },
