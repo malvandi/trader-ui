@@ -64,7 +64,7 @@ export class ActivityReportComponent implements OnInit {
     years: []
   };
 
-  availableYears: number[] = Array.from({length: 13}, (_, i) => 1392 + i);
+  availableYears: number[] = Array.from({length: 13}, (_, i) => 1392 + i).reverse();
   selectedYears: number[] = [1402, 1403, 1404];
   selectedMonth: number = 12;
 

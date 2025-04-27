@@ -201,11 +201,22 @@
     }
 
     .mat-mdc-select-value {
-      font-family: 'IRANSans', sans-serif;
+      font-family: 'iransansv', 'iransans', sans-serif;
     }
 
     .mat-mdc-select-panel {
-      font-family: 'IRANSans', sans-serif;
+      font-family: 'iransansv', 'iransans', sans-serif;
+      direction: rtl;
+    }
+
+    .mat-mdc-option {
+      font-family: 'iransansv', 'iransans', sans-serif !important;
+      font-size: 14px;
+      direction: rtl;
+    }
+
+    .mdc-list-item__primary-text {
+      font-family: 'iransansv', 'iransans', sans-serif !important;
     }
   }
 }
