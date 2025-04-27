@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 interface TableData {
   entries: Array<{
@@ -34,10 +37,21 @@ interface ActivityReportFilter {
   };
 }
 
+interface MonthOption {
+  value: number;
+  label: string;
+}
+
 @Component({
   selector: 'app-activity-report',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [
+    CommonModule, 
+    HttpClientModule, 
+    FormsModule,
+    MatSelectModule,
+    MatFormFieldModule
+  ],
   templateUrl: './activity-report.component.html',
   styleUrls: ['./activity-report.component.scss']
 })
@@ -49,6 +63,25 @@ export class ActivityReportComponent implements OnInit {
     total: 0,
     years: []
   };
+
+  availableYears: number[] = Array.from({length: 13}, (_, i) => 1392 + i);
+  selectedYears: number[] = [1402, 1403, 1404];
+  selectedMonth: number = 12;
+
+  monthOptions: MonthOption[] = [
+    { value: 1, label: 'فروردین' },
+    { value: 2, label: 'اردیبهشت' },
+    { value: 3, label: 'خرداد' },
+    { value: 4, label: 'تیر' },
+    { value: 5, label: 'مرداد' },
+    { value: 6, label: 'شهریور' },
+    { value: 7, label: 'مهر' },
+    { value: 8, label: 'آبان' },
+    { value: 9, label: 'آذر' },
+    { value: 10, label: 'دی' },
+    { value: 11, label: 'بهمن' },
+    { value: 12, label: 'اسفند' }
+  ];
 
   private filter: ActivityReportFilter = {
     subset: false,
@@ -72,6 +105,16 @@ export class ActivityReportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadActivityReport();
+  }
+
+  onYearSelectionChange(): void {
+    this.filter.years = this.selectedYears;
+    this.loadActivityReport();
+  }
+
+  onMonthSelectionChange(): void {
+    this.filter.month = this.selectedMonth;
     this.loadActivityReport();
   }
 
@@ -99,7 +142,7 @@ export class ActivityReportComponent implements OnInit {
 
     if (isPrice) {
       const priceInBillions = value / 10000;
-      
+
       if (priceInBillions < 10) {
         return priceInBillions.toFixed(2);
       } else if (priceInBillions < 100) {

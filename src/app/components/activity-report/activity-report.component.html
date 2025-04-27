@@ -1,4 +1,20 @@
 <div class="table-container ss02">
+  <div class="filters">
+    <mat-form-field>
+      <mat-label>انتخاب سال‌ها</mat-label>
+      <mat-select multiple [(ngModel)]="selectedYears" (selectionChange)="onYearSelectionChange()">
+        <mat-option *ngFor="let year of availableYears" [value]="year">{{year}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>انتخاب ماه</mat-label>
+      <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onMonthSelectionChange()">
+        <mat-option *ngFor="let month of monthOptions" [value]="month.value">{{month.label}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
   <div *ngIf="!data?.entries?.length" class="table-loader">
     <div class="spinner"></div>
     <span>در حال بارگذاری...</span>

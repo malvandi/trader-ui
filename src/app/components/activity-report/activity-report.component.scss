@@ -140,6 +140,11 @@
     font-weight: 600;
     color: #1e293b;
     vertical-align: middle;
+
+    // Year and change column headers
+    &:not([colspan]):not(:first-child):not(:last-child) {
+      font-size: 12px;
+    }
   }
 
   td {
@@ -181,5 +186,26 @@
   user-select: none;
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.filters {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  ::ng-deep {
+    .mat-mdc-form-field {
+      width: 200px;
+    }
+
+    .mat-mdc-select-value {
+      font-family: 'IRANSans', sans-serif;
+    }
+
+    .mat-mdc-select-panel {
+      font-family: 'IRANSans', sans-serif;
+    }
   }
 }
