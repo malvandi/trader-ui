@@ -1,8 +1,29 @@
 .table-container {
   width: 100%;
   padding: 1rem;
-  overflow-x: auto;
+  overflow-x: scroll !important;
   position: relative;
+  margin-bottom: 1rem;
+  display: block;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+    display: block !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 .table-loader {
@@ -52,7 +73,8 @@
   direction: rtl;
   font-family: 'IRANSans', sans-serif;
   table-layout: fixed;
-  min-width: 1000px;
+  min-width: 1500px;
+  display: table;
 
   &.loading {
     opacity: 0.5;
@@ -67,25 +89,50 @@
   }
 
   // Code column
-  th:first-child, 
+  th:first-child,
   td:first-child {
-    min-width: 220px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+  }
+
+  // RSI column
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    padding: 0.25rem !important;
+    box-sizing: border-box !important;
   }
 
   // Price columns
-  th[colspan="3"], 
+  th[colspan="3"],
   td:nth-child(3),
-  th[colspan="6"], 
+  th[colspan="6"],
   td:nth-child(4),
-  th[colspan="9"], 
+  th[colspan="9"],
   td:nth-child(5) {
-    min-width: 200px;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
   }
 
   // Change columns
-  th:not([colspan]), 
+  th:not([colspan]),
   td:not(:first-child):not(:last-child) {
-    min-width: 100px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+  }
+
+  // Chart column
+  th:last-child,
+  td:last-child {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    padding: 0.25rem;
   }
 
   th {
@@ -113,5 +160,18 @@
 
   .change-negative {
     color: #ef4444;
+  }
+
+  .chart-link, .detail-link {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 2px;
+    font-size: 16px;
+    color: #666;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #3498db;
+    }
   }
 }

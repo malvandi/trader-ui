@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 interface TableData {
@@ -52,7 +53,10 @@ export class ActivityReportComponent implements OnInit {
     period: 1
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadActivityReport();
@@ -116,5 +120,11 @@ export class ActivityReportComponent implements OnInit {
 
   openChart(rahavardId: number): void {
     window.open(`https://rahavard365.com/asset/${rahavardId}/chart`, '_blank');
+  }
+
+  openDetails(record: any): void {
+    this.router.navigate(['/stock-details', record.rahavardId], {
+      state: { record }
+    });
   }
 }
