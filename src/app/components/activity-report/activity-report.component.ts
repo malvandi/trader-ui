@@ -28,6 +28,10 @@ interface ActivityReportFilter {
   years: number[];
   month: number;
   period: number;
+  sort?: {
+    property: string;
+    direction: 'asc' | 'desc';
+  };
 }
 
 @Component({
@@ -50,7 +54,16 @@ export class ActivityReportComponent implements OnInit {
     subset: false,
     years: [1402, 1403, 1404],
     month: 12,
-    period: 1
+    period: 1,
+    sort: {
+      property: 'totalSellPrice_change.1403',
+      direction: 'desc'
+    }
+  };
+
+  currentSort: { property: string; direction: 'asc' | 'desc' } = {
+    property: 'totalSellPrice_change.1403',
+    direction: 'desc'
   };
 
   constructor(
@@ -126,5 +139,23 @@ export class ActivityReportComponent implements OnInit {
     this.router.navigate(['/stock-details', record.rahavardId], {
       state: { record }
     });
+  }
+
+  getSortIcon(property: string): string {
+    if (this.currentSort?.property === property) {
+      return this.currentSort.direction === 'asc' ? '↑' : '↓';
+    }
+    return '';
+  }
+
+  sort(property: string): void {
+    if (this.currentSort?.property === property) {
+      this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.currentSort = { property, direction: 'desc' };
+    }
+
+    this.filter.sort = this.currentSort;
+    this.loadActivityReport();
   }
 }
