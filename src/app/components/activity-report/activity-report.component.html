@@ -7,8 +7,8 @@
   <table class="activity-table" [class.loading]="!data?.entries?.length">
     <thead>
       <tr>
-        <th rowspan="3">کد</th>
-        <th rowspan="3">RSI</th>
+        <th rowspan="3" (click)="sort('code')" class="sortable">کد {{getSortIcon('code')}}</th>
+        <th rowspan="3" (click)="sort('rsi')" class="sortable">RSI {{getSortIcon('rsi')}}</th>
         <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">قیمت</th>
         <th [attr.colspan]="((data?.years?.length || 0) + ((data?.years?.length || 0) - 1)) * 3">تعداد</th>
         <th rowspan="3"></th>
@@ -24,38 +24,38 @@
       <tr>
         <!-- Price Headers -->
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
+          <th (click)="sort('domesticSellPrice_' + year)" class="sortable">{{year}} {{getSortIcon('domesticSellPrice_' + year)}}</th>
           <th *ngIf="i > 0" (click)="sort('domesticSellPrice_' + getChangeYear(year))" class="sortable">
             % {{getSortIcon('domesticSellPrice_' + getChangeYear(year))}}
           </th>
         </ng-container>
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
+          <th (click)="sort('exportSellPrice_' + year)" class="sortable">{{year}} {{getSortIcon('exportSellPrice_' + year)}}</th>
           <th *ngIf="i > 0" (click)="sort('exportSellPrice_' + getChangeYear(year))" class="sortable">
             % {{getSortIcon('exportSellPrice_' + getChangeYear(year))}}
           </th>
         </ng-container>
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
+          <th (click)="sort('totalSellPrice_' + year)" class="sortable">{{year}} {{getSortIcon('totalSellPrice_' + year)}}</th>
           <th *ngIf="i > 0" (click)="sort('totalSellPrice_' + getChangeYear(year))" class="sortable">
             % {{getSortIcon('totalSellPrice_' + getChangeYear(year))}}
           </th>
         </ng-container>
         <!-- Count Headers -->
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
-          <th *ngIf="i > 0" (click)="sort('totalSellCount_' + getChangeYear(year))" class="sortable">
-            % {{getSortIcon('totalSellCount_' + getChangeYear(year))}}
+          <th (click)="sort('domesticSellCount_' + year)" class="sortable">{{year}} {{getSortIcon('domesticSellCount_' + year)}}</th>
+          <th *ngIf="i > 0" (click)="sort('domesticSellCount_' + getChangeYear(year))" class="sortable">
+            % {{getSortIcon('domesticSellCount_' + getChangeYear(year))}}
           </th>
         </ng-container>
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
-          <th *ngIf="i > 0" (click)="sort('totalSellCount_' + getChangeYear(year))" class="sortable">
-            % {{getSortIcon('totalSellCount_' + getChangeYear(year))}}
+          <th (click)="sort('exportSellCount_' + year)" class="sortable">{{year}} {{getSortIcon('exportSellCount_' + year)}}</th>
+          <th *ngIf="i > 0" (click)="sort('exportSellCount_' + getChangeYear(year))" class="sortable">
+            % {{getSortIcon('exportSellCount_' + getChangeYear(year))}}
           </th>
         </ng-container>
         <ng-container *ngFor="let year of data?.years || []; let i = index">
-          <th>{{year}}</th>
+          <th (click)="sort('totalSellCount_' + year)" class="sortable">{{year}} {{getSortIcon('totalSellCount_' + year)}}</th>
           <th *ngIf="i > 0" (click)="sort('totalSellCount_' + getChangeYear(year))" class="sortable">
             % {{getSortIcon('totalSellCount_' + getChangeYear(year))}}
           </th>
