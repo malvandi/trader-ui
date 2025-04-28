@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
+import { FormsModule } from '@angular/forms';
 import { PERSIAN_MONTHS } from '../../models/persian-month.model';
 
 interface StockData {
@@ -14,16 +15,17 @@ interface StockData {
 @Component({
   selector: 'app-stock-detail',
   standalone: true,
-  imports: [CommonModule, CanvasJSAngularChartsModule],
+  imports: [CommonModule, CanvasJSAngularChartsModule, FormsModule],
   templateUrl: './stock-detail.component.html',
   styleUrls: ['./stock-detail.component.scss']
 })
 export class StockDetailComponent implements OnInit {
   stockId: number | null = null;
   chartOptions: any;
+  selectedView: 'simple' | 'sum' = 'simple';
+  private chart: any;
 
   private readonly persianMonths = PERSIAN_MONTHS;
-
   private sampleData: StockData[] = this.getSampleData();
 
   constructor(private route: ActivatedRoute) {}
@@ -33,6 +35,31 @@ export class StockDetailComponent implements OnInit {
       this.stockId = +params['id'];
       this.initializeChart();
     });
+  }
+
+  onViewChange() {
+    // Force chart update by creating new options object
+    this.chartOptions = null;
+    setTimeout(() => {
+      this.initializeChart();
+    }, 0);
+  }
+
+  chartInstance(chart: any) {
+    this.chart = chart;
+  }
+
+  private formatValue(value: number): number {
+    // Convert from billion rials to trillion toman
+    const valueInTrillionToman = value / 10000;
+
+    if (valueInTrillionToman < 10) {
+      return Number(valueInTrillionToman.toFixed(2));
+    } else if (valueInTrillionToman < 100) {
+      return Number(valueInTrillionToman.toFixed(1));
+    } else {
+      return Number(valueInTrillionToman.toFixed(0));
+    }
   }
 
   private initializeChart() {
@@ -53,9 +80,18 @@ export class StockDetailComponent implements OnInit {
       const yearData = groupedData[Number(year)];
       const dataPoints = this.persianMonths.map((month, index) => {
         const monthData = yearData.find(item => item.month === index + 1);
+        let value = monthData ? monthData.domestic : 0;
+
+        if (this.selectedView === 'sum') {
+          // Calculate sum up to current month
+          value = yearData
+            .filter(item => item.month <= index + 1)
+            .reduce((sum, item) => sum + item.domestic, 0);
+        }
+
         return {
           label: month.label,
-          y: monthData ? monthData.domestic : 0
+          y: this.formatValue(value)
         };
       });
 
@@ -72,7 +108,7 @@ export class StockDetailComponent implements OnInit {
       exportEnabled: true,
       fontFamily: "'iransansv', 'iransans', sans-serif",
       title: {
-        text: "گزارش فعالیت ماهیانه",
+        text: this.selectedView === 'simple' ? "Stock Activity by Month" : "Cumulative Stock Activity",
         fontFamily: "'iransansv', 'iransans', sans-serif"
       },
       axisX: {
@@ -81,13 +117,20 @@ export class StockDetailComponent implements OnInit {
         labelFontFamily: "'iransansv', 'iransans', sans-serif"
       },
       axisY: {
-        title: "Domestic Sales",
+        title: this.selectedView === 'simple' ? "Domestic Sales (میلیارد تومان)" : "Cumulative Domestic Sales (میلیارد تومان)",
         titleFontFamily: "'iransansv', 'iransans', sans-serif",
         labelFontFamily: "'iransansv', 'iransans', sans-serif"
       },
       toolTip: {
         shared: true,
-        fontFamily: "'iransansv', 'iransans', sans-serif"
+        fontFamily: "'iransansv', 'iransans', sans-serif",
+        contentFormatter: (e: any) => {
+          let content = "";
+          e.entries.forEach((entry: any) => {
+            content += entry.dataSeries.name + ": " + entry.dataPoint.y + " میلیارد تومان<br/>";
+          });
+          return content;
+        }
       },
       legend: {
         cursor: "pointer",

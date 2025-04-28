@@ -2,7 +2,14 @@
   <h2>Stock Details</h2>
   <p>Stock ID: {{ stockId }}</p>
 
+  <div class="options-container">
+    <select [(ngModel)]="selectedView" (change)="onViewChange()">
+      <option value="simple">Simple</option>
+      <option value="sum">Sum</option>
+    </select>
+  </div>
+
   <div class="chart-container">
-    <canvasjs-chart [options]="chartOptions" [styles]="{width: '100%', height:'360px'}"></canvasjs-chart>
+    <canvasjs-chart [options]="chartOptions" [styles]="{width: '100%', height:'360px'}" (chartInstance)="chartInstance($event)"></canvasjs-chart>
   </div>
 </div>
