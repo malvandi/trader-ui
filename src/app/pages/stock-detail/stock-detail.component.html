@@ -1,1 +1,8 @@
-<p>stock-detail works!</p>
+<div class="stock-detail-container">
+  <h2>Stock Details</h2>
+  <p>Stock ID: {{ stockId }}</p>
+
+  <div class="chart-container">
+    <canvasjs-chart [options]="chartOptions" [styles]="{width: '100%', height:'360px'}"></canvasjs-chart>
+  </div>
+</div>

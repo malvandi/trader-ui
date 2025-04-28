@@ -1,8 +1,38 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .stock-detail-container {
   padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
   width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
+  min-height: 90vh;
+  box-sizing: border-box;
+
+  h2 {
+    color: #333;
+    margin-bottom: 16px;
+    font-size: 24px;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 16px;
+  }
+
+  .chart-container {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 20px;
+    min-height: 400px;
+    width: 100%;
+  }
 }
 
 .chart-container {
