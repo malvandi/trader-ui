@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { FormsModule } from '@angular/forms';
 import { PERSIAN_MONTHS } from '../../models/persian-month.model';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface StockData {
   year: number;
@@ -12,59 +17,154 @@ interface StockData {
   export: number;
 }
 
+type DataType = 'domestic' | 'export' | 'total';
+type ViewType = 'simple' | 'sum';
+
+const DEFAULT_FONT_FAMILY = "'iransansv', 'iransans', sans-serif";
+
 @Component({
   selector: 'app-stock-detail',
   standalone: true,
-  imports: [CommonModule, CanvasJSAngularChartsModule, FormsModule],
+  imports: [
+    CommonModule, 
+    CanvasJSAngularChartsModule, 
+    FormsModule, 
+    HttpClientModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './stock-detail.component.html',
   styleUrls: ['./stock-detail.component.scss']
 })
 export class StockDetailComponent implements OnInit {
-  stockId: number | null = null;
-  chartOptions: any;
-  selectedView: 'simple' | 'sum' = 'simple';
+  code: string | null = null;
+  chartOptions: any = null;
+  selectedView: ViewType = 'simple';
+  selectedDataType: DataType = 'total';
+  dataTypes = [
+    { value: 'domestic', label: 'فروش داخلی' },
+    { value: 'export', label: 'فروش صادراتی' },
+    { value: 'total', label: 'مجموع فروش' }
+  ];
+  viewTypes = [
+    { value: 'simple', label: 'نمایش ماهانه' },
+    { value: 'sum', label: 'نمایش تجمعی' }
+  ];
   private chart: any;
+  private stockData: StockData[] = [];
+  isLoading = true;
+  showChart = true;
 
   private readonly persianMonths = PERSIAN_MONTHS;
-  private sampleData: StockData[] = this.getSampleData();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      this.stockId = +params['id'];
-      this.initializeChart();
+      this.code = params['id'];
+      this.fetchStockData();
     });
   }
 
+  private fetchStockData() {
+    if (!this.code) return;
+    this.isLoading = true;
+
+    this.http.post<StockData[]>(`${environment.ktapi}/activity-report/history`, { code: this.code })
+      .subscribe({
+        next: (data) => {
+          this.stockData = data.map(item => ({
+            year: Number(item.year),
+            month: Number(item.month),
+            domestic: Number(item.domestic),
+            export: Number(item.export)
+          }));
+          this.prepareChartData();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
   onViewChange() {
-    // Force chart update by creating new options object
-    this.chartOptions = null;
+    this.updateChart();
+  }
+
+  onDataTypeChange() {
+    this.recreateChart();
+  }
+
+  private recreateChart() {
+    this.showChart = false;
+    this.cdr.detectChanges();
+
+    this.prepareChartData();
+
     setTimeout(() => {
-      this.initializeChart();
-    }, 0);
+      this.showChart = true;
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  private updateChart() {
+    this.prepareChartData();
+    if (this.chart) {
+      this.chart.render();
+    }
   }
 
   chartInstance(chart: any) {
     this.chart = chart;
   }
 
-  private formatValue(value: number): number {
-    // Convert from billion rials to trillion toman
-    const valueInTrillionToman = value / 10000;
+  private convertToTrillionToman(value: number): number {
+    return value / 10000;
+  }
 
-    if (valueInTrillionToman < 10) {
-      return Number(valueInTrillionToman.toFixed(2));
-    } else if (valueInTrillionToman < 100) {
-      return Number(valueInTrillionToman.toFixed(1));
+  private formatDisplayValue(value: number): string {
+    const trillionValue = this.convertToTrillionToman(value);
+    let formattedNumber: number;
+
+    if (trillionValue < 10) {
+      formattedNumber = Number(trillionValue.toFixed(2));
+    } else if (trillionValue < 100) {
+      formattedNumber = Number(trillionValue.toFixed(1));
     } else {
-      return Number(valueInTrillionToman.toFixed(0));
+      formattedNumber = Number(trillionValue.toFixed(0));
+    }
+
+    if (formattedNumber >= 1000) {
+      return formattedNumber.toLocaleString();
+    }
+    return formattedNumber.toString();
+  }
+
+  private getValueForDataType(data: StockData): number {
+    switch (this.selectedDataType) {
+      case 'domestic':
+        return data.domestic;
+      case 'export':
+        return data.export;
+      case 'total':
+        return data.domestic + data.export;
+      default:
+        return 0;
     }
   }
 
-  private initializeChart() {
-    // Group data by year
-    const groupedData = this.sampleData.reduce((acc, curr) => {
+  private prepareChartData() {
+    if (!this.stockData.length) return;
+
+    const groupedData = this.stockData.reduce((acc, curr) => {
       if (!acc[curr.year]) {
         acc[curr.year] = [];
       }
@@ -72,26 +172,38 @@ export class StockDetailComponent implements OnInit {
       return acc;
     }, {} as Record<number, StockData[]>);
 
-    // Sort years
     const sortedYears = Object.keys(groupedData).sort((a, b) => Number(a) - Number(b));
 
-    // Create data series for each year
     const dataSeries = sortedYears.map(year => {
       const yearData = groupedData[Number(year)];
       const dataPoints = this.persianMonths.map((month, index) => {
         const monthData = yearData.find(item => item.month === index + 1);
-        let value = monthData ? monthData.domestic : 0;
+        
+        if (!monthData) {
+          return {
+            label: month.label,
+            y: null
+          };
+        }
+
+        let value = this.getValueForDataType(monthData);
 
         if (this.selectedView === 'sum') {
-          // Calculate sum up to current month
-          value = yearData
-            .filter(item => item.month <= index + 1)
-            .reduce((sum, item) => sum + item.domestic, 0);
+          const monthsUpToCurrent = yearData.filter(item => item.month <= index + 1);
+          if (monthsUpToCurrent.length === 0) {
+            return {
+              label: month.label,
+              y: null
+            };
+          }
+          value = monthsUpToCurrent.reduce((sum, item) => sum + this.getValueForDataType(item), 0);
         }
+
+        const trillionValue = this.convertToTrillionToman(value);
 
         return {
           label: month.label,
-          y: this.formatValue(value)
+          y: trillionValue
         };
       });
 
@@ -103,38 +215,55 @@ export class StockDetailComponent implements OnInit {
       };
     });
 
+    const dataTypeLabels = {
+      'domestic': 'فروش داخلی',
+      'export': 'فروش صادراتی',
+      'total': 'مجموع فروش'
+    };
+
     this.chartOptions = {
       animationEnabled: true,
       exportEnabled: true,
-      fontFamily: "'iransansv', 'iransans', sans-serif",
+      fontFamily: DEFAULT_FONT_FAMILY,
       title: {
-        text: this.selectedView === 'simple' ? "Stock Activity by Month" : "Cumulative Stock Activity",
-        fontFamily: "'iransansv', 'iransans', sans-serif"
+        text: this.selectedView === 'simple' 
+          ? `${dataTypeLabels[this.selectedDataType]} به تفکیک ماه` 
+          : `${dataTypeLabels[this.selectedDataType]} تجمعی`,
+        fontFamily: DEFAULT_FONT_FAMILY
       },
       axisX: {
-        title: "Month",
-        titleFontFamily: "'iransansv', 'iransans', sans-serif",
-        labelFontFamily: "'iransansv', 'iransans', sans-serif"
+        title: "ماه",
+        titleFontFamily: DEFAULT_FONT_FAMILY,
+        labelFontFamily: DEFAULT_FONT_FAMILY
       },
       axisY: {
-        title: this.selectedView === 'simple' ? "Domestic Sales (میلیارد تومان)" : "Cumulative Domestic Sales (میلیارد تومان)",
-        titleFontFamily: "'iransansv', 'iransans', sans-serif",
-        labelFontFamily: "'iransansv', 'iransans', sans-serif"
+        title: this.selectedView === 'simple' 
+          ? `${dataTypeLabels[this.selectedDataType]} (میلیارد تومان)` 
+          : `${dataTypeLabels[this.selectedDataType]} تجمعی (میلیارد تومان)`,
+        titleFontFamily: DEFAULT_FONT_FAMILY,
+        labelFontFamily: DEFAULT_FONT_FAMILY,
+        labelFormatter: (e: any) => {
+          return this.formatDisplayValue(e.value * 10000);
+        }
       },
       toolTip: {
         shared: true,
-        fontFamily: "'iransansv', 'iransans', sans-serif",
+        fontFamily: DEFAULT_FONT_FAMILY,
         contentFormatter: (e: any) => {
           let content = "";
           e.entries.forEach((entry: any) => {
-            content += entry.dataSeries.name + ": " + entry.dataPoint.y + " میلیارد تومان<br/>";
+            if (entry.dataPoint.y === null) {
+              content += entry.dataSeries.name + ": داده موجود نیست<br/>";
+            } else {
+              content += entry.dataSeries.name + ": " + this.formatDisplayValue(entry.dataPoint.y * 10000) + " میلیارد تومان<br/>";
+            }
           });
           return content;
         }
       },
       legend: {
         cursor: "pointer",
-        fontFamily: "'iransansv', 'iransans', sans-serif",
+        fontFamily: DEFAULT_FONT_FAMILY,
         itemclick: function(e: any) {
           if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
             e.dataSeries.visible = false;
@@ -146,286 +275,5 @@ export class StockDetailComponent implements OnInit {
       },
       data: dataSeries
     };
-  }
-
-  private getSampleData(): StockData[] {
-    return [
-      {
-        "year": 1400,
-        "month": 1,
-        "domestic": 160464,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 2,
-        "domestic": 213342,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 3,
-        "domestic": 209141,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 4,
-        "domestic": 211003,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 5,
-        "domestic": 287808,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 6,
-        "domestic": 251592,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 7,
-        "domestic": 290293,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 8,
-        "domestic": 281149,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 9,
-        "domestic": 355728,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 10,
-        "domestic": 379036,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 11,
-        "domestic": 320727,
-        "export": 0
-      },
-      {
-        "year": 1400,
-        "month": 12,
-        "domestic": 292669,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 1,
-        "domestic": 282585,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 2,
-        "domestic": 365841,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 3,
-        "domestic": 305385,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 4,
-        "domestic": 213121,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 5,
-        "domestic": 214849,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 6,
-        "domestic": 181113,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 7,
-        "domestic": 193360,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 8,
-        "domestic": 344244,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 9,
-        "domestic": 197549,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 10,
-        "domestic": 59514,
-        "export": 0
-      },
-      {
-        "year": 1401,
-        "month": 11,
-        "domestic": 151181,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 1,
-        "domestic": 312093,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 2,
-        "domestic": 297733,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 3,
-        "domestic": 434252,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 4,
-        "domestic": 368792,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 5,
-        "domestic": 270652,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 6,
-        "domestic": 280018,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 7,
-        "domestic": 537315,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 8,
-        "domestic": 624419,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 9,
-        "domestic": 597455,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 10,
-        "domestic": 459566,
-        "export": 0
-      },
-      {
-        "year": 1402,
-        "month": 12,
-        "domestic": 345978,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 1,
-        "domestic": 156534,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 2,
-        "domestic": 384215,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 3,
-        "domestic": 728003,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 4,
-        "domestic": 345080,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 5,
-        "domestic": 358034,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 6,
-        "domestic": 276142,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 7,
-        "domestic": 485397,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 8,
-        "domestic": 549957,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 9,
-        "domestic": 379608,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 10,
-        "domestic": 671092,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 11,
-        "domestic": 524001,
-        "export": 0
-      },
-      {
-        "year": 1403,
-        "month": 12,
-        "domestic": 693056,
-        "export": 0
-      }
-    ]
   }
 }

@@ -10,12 +10,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 0;
   width: 100%;
-  min-height: 90vh;
+  min-height: 85vh;
   box-sizing: border-box;
 
   h2 {
     color: #333;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     font-size: 24px;
   }
 
@@ -27,7 +27,7 @@
 
   .options-container {
     margin-bottom: 20px;
-    
+
     select {
       padding: 8px 12px;
       border: 1px solid #ddd;
@@ -36,7 +36,7 @@
       font-size: 14px;
       background-color: #fff;
       cursor: pointer;
-      
+
       &:focus {
         outline: none;
         border-color: #007bff;
@@ -51,6 +51,37 @@
     margin-top: 20px;
     min-height: 400px;
     width: 100%;
+    position: relative;
+    display: block;
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-family: 'iransansv', 'iransans', sans-serif;
+    color: #666;
+  }
+
+  .mat-form-field {
+    min-width: 200px;
+  }
+
+  .mat-radio-group {
+    margin-right: 20px;
+  }
+
+  .mat-spinner {
+    margin: 20px auto;
+  }
+
+  canvasjs-chart {
+    display: block;
+    margin-top: 20px;
   }
 }
 

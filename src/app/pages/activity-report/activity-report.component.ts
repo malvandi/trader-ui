@@ -42,8 +42,8 @@ interface ActivityReportFilter {
   selector: 'app-activity-report',
   standalone: true,
   imports: [
-    CommonModule, 
-    HttpClientModule, 
+    CommonModule,
+    HttpClientModule,
     FormsModule,
     MatSelectModule,
     MatFormFieldModule
@@ -162,7 +162,7 @@ export class ActivityReportComponent implements OnInit {
   }
 
   openDetails(record: any): void {
-    this.router.navigate(['/stock-details', record.rahavardId], {
+    this.router.navigate(['/stock-details', record.code], {
       state: { record }
     });
   }

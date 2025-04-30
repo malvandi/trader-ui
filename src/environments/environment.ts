@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
-  ktapi: 'http://localhost:3000/api', // Development API endpoint
-  napi: 'https://trader.bamap.ir:444/api'   // Development API endpoint
+  // ktapi: 'http://localhost:9030',
+  ktapi: 'https://trader.bamap.ir:444/kt-api',
+  napi: 'https://trader.bamap.ir:444/api'
 };
