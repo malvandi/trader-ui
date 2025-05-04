@@ -1,94 +1,94 @@
 :host {
-  display: block;
-  width: 100%;
+    display: block;
+    width: 100%;
 }
 
 .stock-detail-container {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  width: 100%;
-  min-height: 85vh;
-  box-sizing: border-box;
-
-  h2 {
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 24px;
-  }
-
-  p {
-    color: #666;
-    margin-bottom: 24px;
-    font-size: 16px;
-  }
-
-  .options-container {
-    margin-bottom: 20px;
-
-    select {
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-family: 'iransansv', 'iransans', sans-serif;
-      font-size: 14px;
-      background-color: #fff;
-      cursor: pointer;
-
-      &:focus {
-        outline: none;
-        border-color: #007bff;
-      }
-    }
-  }
-
-  .chart-container {
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    padding: 16px;
-    margin-top: 20px;
-    min-height: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0;
     width: 100%;
-    position: relative;
-    display: block;
-  }
+    min-height: 85vh;
+    box-sizing: border-box;
 
-  .loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    margin-top: 20px;
-    font-family: 'iransansv', 'iransans', sans-serif;
-    color: #666;
-  }
+    h2 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
 
-  .mat-form-field {
-    min-width: 200px;
-  }
+    p {
+        color: #666;
+        margin-bottom: 24px;
+        font-size: 16px;
+    }
 
-  .mat-radio-group {
-    margin-right: 20px;
-  }
+    .options-container {
+        margin-bottom: 20px;
 
-  .mat-spinner {
-    margin: 20px auto;
-  }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'iransansv', 'iransans', sans-serif;
+            font-size: 14px;
+            background-color: #fff;
+            cursor: pointer;
 
-  canvasjs-chart {
-    display: block;
-    margin-top: 20px;
-  }
+            &:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+        }
+    }
+
+    .chart-container {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 16px;
+        margin-top: 20px;
+        min-height: 400px;
+        width: 100%;
+        position: relative;
+        display: block;
+    }
+
+    .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        margin-top: 20px;
+        font-family: 'iransansv', 'iransans', sans-serif;
+        color: #666;
+    }
+
+    .mat-form-field {
+        min-width: 200px;
+    }
+
+    .mat-radio-group {
+        margin-right: 20px;
+    }
+
+    .mat-spinner {
+        margin: 20px auto;
+    }
+
+    canvasjs-chart {
+        display: block;
+        margin-top: 20px;
+    }
 }
 
 .chart-container {
-  position: relative;
-  height: 500px;
-  width: 100%;
-  margin-top: 20px;
-  padding: 0 20px;
+    position: relative;
+    height: 500px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 20px;
 }

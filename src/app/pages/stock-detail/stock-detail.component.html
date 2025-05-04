@@ -31,7 +31,7 @@
         <div *ngIf="isLoading" class="text-center">
           <mat-spinner diameter="40"></mat-spinner>
         </div>
-        <canvasjs-chart *ngIf="!isLoading && showChart" [options]="chartOptions" (chartInstance)="chartInstance($event)"></canvasjs-chart>
+        <canvasjs-chart class="ss02" *ngIf="!isLoading && showChart" [options]="chartOptions" (chartInstance)="chartInstance($event)"></canvasjs-chart>
       </div>
     </div>
   </div>
