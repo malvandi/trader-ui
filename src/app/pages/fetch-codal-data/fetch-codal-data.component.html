@@ -1,0 +1,101 @@
+<div class="fetch-codal-data-container">
+  <h2>Fetch Codal Data</h2>
+
+  <div class="input-group">
+    <mat-form-field>
+      <mat-label>URL</mat-label>
+      <input
+        matInput
+        type="text"
+        id="url"
+        [(ngModel)]="url"
+        (ngModelChange)="onUrlChange()"
+        placeholder="Enter URL"
+        [disabled]="isProcessing"
+      />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>از صفحه</mat-label>
+      <input
+        matInput
+        type="number"
+        id="fromPage"
+        [(ngModel)]="fromPage"
+        (ngModelChange)="onFromPageChange()"
+        min="1"
+        [disabled]="isProcessing"
+      />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>تا صفحه</mat-label>
+      <input
+        matInput
+        type="number"
+        id="toPage"
+        [(ngModel)]="toPage"
+        (ngModelChange)="onToPageChange()"
+        min="1"
+        [disabled]="isProcessing"
+      />
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="generateUrls()"
+      [disabled]="isProcessing"
+      class="generate-button"
+    >
+      دریافت اطلاعیه ها
+    </button>
+  </div>
+
+  <div class="buttons-container" *ngIf="urlEntries.length > 0">
+    <h3>Page Buttons</h3>
+    <div class="buttons-grid">
+      <button
+        *ngFor="let entry of urlEntries"
+        mat-raised-button
+        [class]="'status-' + entry.status"
+        [disabled]="entry.status === 'in_process' || isProcessing"
+        (click)="fetchUrlData(entry)"
+        class="page-button"
+      >
+        {{ entry.pageNumber }}
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container" *ngIf="dataList.length > 0">
+    <h3>Fetched Data ({{ dataList.length }} items)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Title</th>
+          <th>Name</th>
+          <th>URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataList">
+          <td>{{ item.code || '-' }}</td>
+          <td>{{ item.title || '-' }}</td>
+          <td>{{ item.name || '-' }}</td>
+          <td>
+            <a *ngIf="item.url" [href]="item.url" target="_blank" class="url-link">
+              {{ item.url }}
+            </a>
+            <span *ngIf="!item.url">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="urlEntries.length === 0 && dataList.length === 0" class="empty-state">
+    Enter URL and page range, then click "Generate URLs" to start.
+  </div>
+</div>
