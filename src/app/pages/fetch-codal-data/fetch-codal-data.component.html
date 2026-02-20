@@ -41,14 +41,34 @@
       />
     </mat-form-field>
 
+    <mat-form-field>
+      <mat-label>تعداد ترد</mat-label>
+      <input
+        matInput
+        type="number"
+        id="threads"
+        [(ngModel)]="threads"
+        (ngModelChange)="onThreadsChange()"
+        min="1"
+        [disabled]="isProcessing"
+      />
+    </mat-form-field>
+
     <button
       mat-raised-button
-      color="primary"
+      [color]="isPaused ? 'accent' : 'primary'"
       (click)="generateUrls()"
-      [disabled]="isProcessing"
       class="generate-button"
     >
-      دریافت اطلاعیه ها
+      <ng-container *ngIf="!isProcessing && !isProcessingDataList">
+        دریافت اطلاعیه ها
+      </ng-container>
+      <ng-container *ngIf="(isProcessing || isProcessingDataList) && !isPaused">
+        توقف دانلود
+      </ng-container>
+      <ng-container *ngIf="(isProcessing || isProcessingDataList) && isPaused">
+        دانلود متوقف شده
+      </ng-container>
     </button>
   </div>
 
@@ -59,7 +79,7 @@
         *ngFor="let entry of urlEntries"
         mat-raised-button
         [class]="'status-' + entry.status"
-        [disabled]="entry.status === 'in_process' || isProcessing"
+        [disabled]="entry.status === 'in_process' && !isPaused"
         (click)="fetchUrlData(entry)"
         class="page-button"
       >
@@ -68,54 +88,32 @@
     </div>
   </div>
 
-  <div class="table-container" *ngIf="dataList.length > 0">
-    <div class="actions">
-      <button 
-        mat-raised-button 
-        color="primary" 
-        (click)="processDataListSequentially()" 
-        [disabled]="isProcessingDataList"
-      >
-        {{ isProcessingDataList ? 'در حال پردازش...' : 'ارسال به سرور' }}
-      </button>
-    </div>
+  <div class="progress-container" *ngIf="dataList.length > 0">
+    <h3>وضعیت دانلود کدال</h3>
 
-    <h3>Fetched Data ({{ dataList.length }} items)</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>وضعیت</th>
-          <th>Code</th>
-          <th>Title</th>
-          <th>Name</th>
-          <th>لینک</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of dataList" [class]="'status-row-' + (item.status || 'init')">
-          <td>
-            <span class="status-badge" [class]="'status-' + (item.status || 'init')">
-              {{ item.status || 'init' }}
-            </span>
-          </td>
-          <td>{{ item.code || '-' }}</td>
-          <td>{{ item.title || '-' }}</td>
-          <td>{{ item.name || '-' }}</td>
-          <td>
-            <button 
-              *ngIf="item.url"
-              mat-raised-button 
-              color="primary"
-              (click)="openUrl(item.url)"
-              class="link-button"
-            >
-              باز کردن لینک
-            </button>
-            <span *ngIf="!item.url">-</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <mat-progress-bar
+      mode="determinate"
+      [value]="progressPercent">
+    </mat-progress-bar>
+
+    <div class="progress-stats">
+      <div class="stat-item success">
+        <span class="label">موفق</span>
+        <span class="value">{{ successCount }}</span>
+      </div>
+      <div class="stat-item error">
+        <span class="label">خطا</span>
+        <span class="value">{{ errorCount }}</span>
+      </div>
+      <div class="stat-item queue">
+        <span class="label">در صف</span>
+        <span class="value">{{ inQueueCount }}</span>
+      </div>
+      <div class="stat-item total">
+        <span class="label">مجموع</span>
+        <span class="value">{{ totalCodalItems }}</span>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="urlEntries.length === 0 && dataList.length === 0" class="empty-state">
