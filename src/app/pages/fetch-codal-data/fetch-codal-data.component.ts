@@ -223,17 +223,32 @@ export class FetchCodalDataComponent implements OnInit {
       const item = this.dataList[index];
       item.status = 'in_process';
 
-      this.http.post(
+      // First, fetch activity reports from napi
+      this.http.post<any>(
         `${environment.napi}/codal/codal-fetch-activity-reports`,
         { url: item.url }
       ).subscribe({
-        next: () => {
-          item.status = 'success';
-          index++;
-          processNext();
+        next: (response) => {
+          // Then forward the response to ktapi
+          this.http.post(
+            `${environment.ktapi}/activity-report`,
+            Array.isArray(response) ? response : [response]
+          ).subscribe({
+            next: () => {
+              item.status = 'success';
+              index++;
+              processNext();
+            },
+            error: (ktapiErr) => {
+              console.error(`Error forwarding to ktapi for item ${item.url}:`, ktapiErr);
+              item.status = 'failure';
+              index++;
+              processNext();
+            }
+          });
         },
         error: (err) => {
-          console.error(`Error processing item ${item.url}:`, err);
+          console.error(`Error fetching activity reports for item ${item.url}:`, err);
           item.status = 'failure';
           index++;
           processNext();
