@@ -69,25 +69,48 @@
   </div>
 
   <div class="table-container" *ngIf="dataList.length > 0">
+    <div class="actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="processDataListSequentially()" 
+        [disabled]="isProcessingDataList"
+      >
+        {{ isProcessingDataList ? 'در حال پردازش...' : 'ارسال به سرور' }}
+      </button>
+    </div>
+
     <h3>Fetched Data ({{ dataList.length }} items)</h3>
     <table>
       <thead>
         <tr>
+          <th>وضعیت</th>
           <th>Code</th>
           <th>Title</th>
           <th>Name</th>
-          <th>URL</th>
+          <th>لینک</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of dataList">
+        <tr *ngFor="let item of dataList" [class]="'status-row-' + (item.status || 'init')">
+          <td>
+            <span class="status-badge" [class]="'status-' + (item.status || 'init')">
+              {{ item.status || 'init' }}
+            </span>
+          </td>
           <td>{{ item.code || '-' }}</td>
           <td>{{ item.title || '-' }}</td>
           <td>{{ item.name || '-' }}</td>
           <td>
-            <a *ngIf="item.url" [href]="item.url" target="_blank" class="url-link">
-              {{ item.url }}
-            </a>
+            <button 
+              *ngIf="item.url"
+              mat-raised-button 
+              color="primary"
+              (click)="openUrl(item.url)"
+              class="link-button"
+            >
+              باز کردن لینک
+            </button>
             <span *ngIf="!item.url">-</span>
           </td>
         </tr>

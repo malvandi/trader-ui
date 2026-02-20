@@ -136,22 +136,62 @@
           border-bottom: 1px solid #dee2e6;
           transition: background-color 0.2s;
 
-          &:hover {
+          &.status-row-init {
             background-color: #f8f9fa;
+          }
+
+          &.status-row-in_process {
+            background-color: #fffbf0;
+          }
+
+          &.status-row-success {
+            background-color: #f0fff4;
+          }
+
+          &.status-row-failure {
+            background-color: #fff5f5;
+          }
+
+          &:hover {
+            background-color: #f1f5f9;
           }
 
           td {
             padding: 10px 12px;
             color: #555;
 
-            .url-link {
-              color: #007bff;
-              text-decoration: none;
-              word-break: break-all;
+            .status-badge {
+              display: inline-block;
+              padding: 4px 10px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: 500;
+              text-transform: capitalize;
 
-              &:hover {
-                text-decoration: underline;
+              &.status-init {
+                background-color: #e9ecef;
+                color: #495057;
               }
+
+              &.status-in_process {
+                background-color: #fff3cd;
+                color: #856404;
+              }
+
+              &.status-success {
+                background-color: #d4edda;
+                color: #155724;
+              }
+
+              &.status-failure {
+                background-color: #f8d7da;
+                color: #721c24;
+              }
+            }
+
+            .link-button {
+              padding: 4px 12px;
+              font-size: 12px;
             }
           }
         }

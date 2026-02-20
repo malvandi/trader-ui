@@ -12,6 +12,7 @@ interface CodalDataItem {
   title: string;
   url: string;
   name: string;
+  status?: 'init' | 'in_process' | 'success' | 'failure';
 }
 
 interface UrlEntry {
@@ -29,8 +30,8 @@ const DEFAULT_TO_PAGE = 100;
   selector: 'app-fetch-codal-data',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
@@ -46,6 +47,7 @@ export class FetchCodalDataComponent implements OnInit {
   urlEntries: UrlEntry[] = [];
   dataList: CodalDataItem[] = [];
   isProcessing: boolean = false;
+  isProcessingDataList: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -114,8 +116,8 @@ export class FetchCodalDataComponent implements OnInit {
     this.isProcessing = false;
 
     for (let page = this.fromPage; page <= this.toPage; page++) {
-      const generatedUrl = this.url.includes('?') 
-        ? `${this.url}&PageNumber=${page}` 
+      const generatedUrl = this.url.includes('?')
+        ? `${this.url}&PageNumber=${page}`
         : `${this.url}?PageNumber=${page}`;
 
       this.urlEntries.push({
@@ -147,14 +149,18 @@ export class FetchCodalDataComponent implements OnInit {
       urlEntry.status = 'in_process';
 
       this.http.post<CodalDataItem[]>(
-        `${environment.napi}/codal/codal-fetch-activity-reports-list`, 
+        `${environment.napi}/codal/codal-fetch-activity-reports-list`,
         { url: urlEntry.url }
       ).subscribe({
         next: (response) => {
           urlEntry.status = 'success';
           // Push all items from response to dataList
           if (Array.isArray(response)) {
-            this.dataList.push(...response);
+            const itemsWithStatus = response.map(item => ({
+              ...item,
+              status: 'init' as const
+            }));
+            this.dataList.push(...itemsWithStatus);
           }
           currentIndex++;
           fetchNext();
@@ -179,14 +185,18 @@ export class FetchCodalDataComponent implements OnInit {
     urlEntry.status = 'in_process';
 
     this.http.post<CodalDataItem[]>(
-      `${environment.napi}/codal/codal-fetch-activity-reports-list`, 
+      `${environment.napi}/codal/codal-fetch-activity-reports-list`,
       { url: urlEntry.url }
     ).subscribe({
       next: (response) => {
         urlEntry.status = 'success';
         // Push all items from response to dataList
         if (Array.isArray(response)) {
-          this.dataList.push(...response);
+          const itemsWithStatus = response.map(item => ({
+            ...item,
+            status: 'init' as const
+          }));
+          this.dataList.push(...itemsWithStatus);
         }
       },
       error: (error) => {
@@ -194,5 +204,49 @@ export class FetchCodalDataComponent implements OnInit {
         urlEntry.status = 'failure';
       }
     });
+  }
+
+  processDataListSequentially(): void {
+    if (this.dataList.length === 0 || this.isProcessingDataList) {
+      return;
+    }
+
+    this.isProcessingDataList = true;
+    let index = 0;
+
+    const processNext = () => {
+      if (index >= this.dataList.length) {
+        this.isProcessingDataList = false;
+        return;
+      }
+
+      const item = this.dataList[index];
+      item.status = 'in_process';
+
+      this.http.post(
+        `${environment.napi}/codal/codal-fetch-activity-reports`,
+        { url: item.url }
+      ).subscribe({
+        next: () => {
+          item.status = 'success';
+          index++;
+          processNext();
+        },
+        error: (err) => {
+          console.error(`Error processing item ${item.url}:`, err);
+          item.status = 'failure';
+          index++;
+          processNext();
+        }
+      });
+    };
+
+    processNext();
+  }
+
+  openUrl(url: string): void {
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 }
