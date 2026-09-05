@@ -77,7 +77,7 @@ export class StockDetailComponent implements OnInit {
         if (!this.code) return;
         this.isLoading = true;
 
-        this.http.post<StockData[]>(`${environment.ktapi}/activity-report/history`, {code: this.code})
+        this.http.post<StockData[]>(`${environment.ktapi}/activity-report/${this.code}/history`, {code: this.code})
             .subscribe({
                 next: (data) => {
                     this.stockData = data.map(item => ({
