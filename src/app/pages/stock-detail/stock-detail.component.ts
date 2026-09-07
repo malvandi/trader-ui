@@ -41,7 +41,7 @@ const DEFAULT_FONT_FAMILY = "'iransansv', 'iransans', sans-serif";
 export class StockDetailComponent implements OnInit {
     code: string | null = null;
     chartOptions: any = null;
-    selectedView: ViewType = 'simple';
+    selectedView: ViewType = 'sum';
     selectedDataType: DataType = 'total';
     dataTypes = [
         {value: 'domestic', label: 'فروش داخلی'},
