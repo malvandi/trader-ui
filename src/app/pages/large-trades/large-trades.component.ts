@@ -7,9 +7,10 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatDatepickerInput, MatDatepickerToggle, MatDatepicker} from '@angular/material/datepicker';
+import {provideNativeDateAdapter} from '@angular/material/core';
 import {environment} from '../../../environments/environment';
-import {MatCalendar, MatDatepickerModule} from '@angular/material/datepicker';
-// import {MatDatepickerInput, MatDatepickerModule} from '@angular/material/datepicker';
 
 export interface LargeTradeRequest {
   code: string;
@@ -46,16 +47,16 @@ export interface LargeTradeResponse {
 interface UiFilters {
   code: string;
   minAmount: number | null;
-  tradedAtFrom: string;
-  tradedAtTo: string;
+  tradedAtFrom: Date | null;
+  tradedAtTo: Date | null;
   type: 'BUY' | 'SELL';
 }
 
 const DEFAULT_UI_FILTERS: UiFilters = {
   code: '',
   minAmount: 200,
-  tradedAtFrom: '',
-  tradedAtTo: '',
+  tradedAtFrom: null,
+  tradedAtTo: null,
   type: 'BUY'
 };
 
@@ -64,7 +65,7 @@ const DEFAULT_API_FILTERS: Omit<LargeTradeRequest, 'page' | 'limit'> = {
   minAmount: 2000000000,
   type: 'BUY',
   sort: {
-    propertyName: 'tradedAt',
+    propertyName: 'amount',
     direction: 'DESC'
   }
 };
@@ -74,23 +75,26 @@ const TRADE_TYPE_LABELS: Record<'BUY' | 'SELL', string> = {
   SELL: 'فروش'
 };
 
-const RIELS_PER_MILLION_TOMAN = 10_000_000;
+const RIALS_PER_MILLION_TOMAN = 10_000_000;
 
 @Component({
   selector: 'app-large-trades',
   standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        HttpClientModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        MatDatepickerModule
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDatepicker
+  ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './large-trades.component.html',
   styleUrls: ['./large-trades.component.scss']
 })
@@ -127,37 +131,44 @@ export class LargeTradesComponent implements OnInit {
       limit: this.pageSize
     };
 
-    const hasFromDate = this.uiFilters.tradedAtFrom && this.uiFilters.tradedAtFrom.trim() !== '';
-    const hasToDate = this.uiFilters.tradedAtTo && this.uiFilters.tradedAtTo.trim() !== '';
+    const hasFromDate = this.uiFilters.tradedAtFrom !== null;
+    const hasToDate = this.uiFilters.tradedAtTo !== null;
 
     if (hasFromDate || hasToDate) {
       request.tradedAt = {};
       if (hasFromDate) {
-        request.tradedAt.from = this.formatDateForApi(this.uiFilters.tradedAtFrom);
+        request.tradedAt.from = this.formatDateForApi(this.uiFilters.tradedAtFrom!, true);
       }
       if (hasToDate) {
-        request.tradedAt.to = this.formatDateForApi(this.uiFilters.tradedAtTo);
+        request.tradedAt.to = this.formatDateForApi(this.uiFilters.tradedAtTo!, false);
       }
     }
 
     return request;
   }
 
-  private formatDateForApi(dateString: string): string {
+  private formatDateForApi(date: Date, isFromDate: boolean): string {
     try {
-      const date = new Date(dateString);
-      return date.toISOString();
+      const d = new Date(date);
+      if (isFromDate) {
+        // Start of day: 00:00:00.000
+        d.setHours(0, 0, 0, 0);
+      } else {
+        // End of day: 23:59:59.999
+        d.setHours(23, 59, 59, 999);
+      }
+      return d.toISOString();
     } catch {
-      return dateString;
+      return date.toISOString();
     }
   }
 
   millionTomansToRials(millionTomans: number): number {
-    return Math.round(millionTomans * RIELS_PER_MILLION_TOMAN);
+    return Math.round(millionTomans * RIALS_PER_MILLION_TOMAN);
   }
 
   rialsToMillionTomans(rials: number): number {
-    return rials / RIELS_PER_MILLION_TOMAN;
+    return rials / RIALS_PER_MILLION_TOMAN;
   }
 
   loadLargeTrades(): void {
@@ -221,7 +232,7 @@ export class LargeTradesComponent implements OnInit {
       return '';
     }
     const millionTomans = this.rialsToMillionTomans(value);
-    return millionTomans.toLocaleString('fa-IR', {minimumFractionDigits: 2, maximumFractionDigits: 4});
+    return millionTomans.toLocaleString('fa-IR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
   }
 
   formatMinAmountInput(value: number | null): string {
