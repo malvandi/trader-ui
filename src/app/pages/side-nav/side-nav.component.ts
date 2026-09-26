@@ -13,7 +13,8 @@ export class SideNavComponent {
   navItems = [
     { path: 'activity-report', label: 'Activity Report', icon: '📊' },
     { path: 'gain', label: 'Gain', icon: '💰' },
-    { path: 'admin', label: 'Admin', icon: '⚙️' }
+    { path: 'admin', label: 'Admin', icon: '⚙️' },
+    { path: 'large-trades', label: 'Large Trades', icon: '📈' }
   ];
 
   constructor(public router: Router) {}

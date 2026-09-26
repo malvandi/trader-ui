@@ -24,6 +24,7 @@ export class HeaderComponent {
     if (url.includes('activity-report')) return 'Activity Report';
     if (url.includes('gain')) return 'Gain';
     if (url.includes('admin')) return 'Admin';
+    if (url.includes('large-trades')) return 'Large Trades';
     return 'Activity Report';
   }
 
