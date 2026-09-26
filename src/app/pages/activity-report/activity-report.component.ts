@@ -32,9 +32,9 @@ interface ActivityReportFilter {
     years: number[];
     month: number;
     period: number;
-    sort?: {
-        property: string;
-        direction: 'asc' | 'desc';
+    order?: {
+        propertyName: string;
+        direction: 'ASC' | 'DESC';
     };
 }
 
@@ -60,12 +60,12 @@ export class ActivityReportComponent implements OnInit {
         years: []
     };
 
-    availableYears: number[] = Array.from({length: 13}, (_, i) => 1392 + i).reverse();
-    selectedYears: number[] = [1402, 1403, 1404];
+    availableYears: number[] = Array.from({length: 14}, (_, i) => 1392 + i).reverse();
+    selectedYears: number[] = [1403, 1404, 1405];
     selectedMonth: number = 1;
-    currentSort: { property: string; direction: 'asc' | 'desc' } = {
-        property: 'totalSellPrice_change.1404',
-        direction: 'desc'
+    currentOrder: { propertyName: string; direction: 'ASC' | 'DESC' } = {
+        propertyName: 'totalSellPrice_change.1405',
+        direction: 'DESC'
     };
 
     monthOptions: PersianMonth[] = PERSIAN_MONTHS;
@@ -75,7 +75,7 @@ export class ActivityReportComponent implements OnInit {
         years: this.selectedYears,
         month: this.selectedMonth,
         period: 1,
-        sort: this.currentSort
+        order: this.currentOrder
     };
 
     constructor(
@@ -99,7 +99,7 @@ export class ActivityReportComponent implements OnInit {
     }
 
     loadActivityReport(): void {
-        const url = `${environment.napi}/analyzer/fundamental/activity-report-growth`;
+        const url = `${environment.ktapi}/activity-report-growth`;
         this.http.post<TableData>(url, this.filter).subscribe({
             next: (response) => {
                 console.log('Activity report loaded:', response);
@@ -117,7 +117,7 @@ export class ActivityReportComponent implements OnInit {
 
     getValueWithCommas(value: number | undefined | null, isPrice: boolean = false): string {
         if (value === undefined || value === null) {
-            return '0';
+            return '';
         }
 
         if (isPrice) {
@@ -159,25 +159,25 @@ export class ActivityReportComponent implements OnInit {
     }
 
     openDetails(record: any): void {
-        const url = `/#/stock-details/${record.code}`;
+        const url = `#/stock-details/${record.code}`;
         window.open(url, '_blank');
     }
 
     getSortIcon(property: string): string {
-        if (this.currentSort?.property === property) {
-            return this.currentSort.direction === 'asc' ? '↑' : '↓';
+        if (this.currentOrder?.propertyName === property) {
+            return this.currentOrder.direction === 'ASC' ? '↑' : '↓';
         }
         return '';
     }
 
     sort(property: string): void {
-        if (this.currentSort?.property === property) {
-            this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        if (this.currentOrder?.propertyName === property) {
+            this.currentOrder.direction = this.currentOrder.direction === 'ASC' ? 'DESC' : 'ASC';
         } else {
-            this.currentSort = {property, direction: 'desc'};
+            this.currentOrder = {propertyName: property, direction: 'DESC'};
         }
 
-        this.filter.sort = this.currentSort;
+        this.filter.order = this.currentOrder;
         this.loadActivityReport();
     }
 }

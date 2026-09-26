@@ -41,7 +41,7 @@ const DEFAULT_FONT_FAMILY = "'iransansv', 'iransans', sans-serif";
 export class StockDetailComponent implements OnInit {
     code: string | null = null;
     chartOptions: any = null;
-    selectedView: ViewType = 'simple';
+    selectedView: ViewType = 'sum';
     selectedDataType: DataType = 'total';
     dataTypes = [
         {value: 'domestic', label: 'فروش داخلی'},
@@ -51,6 +51,18 @@ export class StockDetailComponent implements OnInit {
     viewTypes = [
         {value: 'simple', label: 'نمایش ماهانه'},
         {value: 'sum', label: 'نمایش تجمعی'}
+    ];
+    private yearColors = [
+        "#2ca02c",
+        "#ff7f0e",
+        "#6baef7",
+        "#5852be",
+        "#8c564b",
+        "#7f7f7f",
+        "#e377c2",
+        "#bcbd22",
+        "#17becf",
+        "#d62728",
     ];
     private chart: any;
     private stockData: StockData[] = [];
@@ -77,7 +89,7 @@ export class StockDetailComponent implements OnInit {
         if (!this.code) return;
         this.isLoading = true;
 
-        this.http.post<StockData[]>(`${environment.ktapi}/activity-report/history`, {code: this.code})
+        this.http.post<StockData[]>(`${environment.ktapi}/activity-report/${this.code}/history`, {code: this.code})
             .subscribe({
                 next: (data) => {
                     this.stockData = data.map(item => ({
@@ -154,7 +166,11 @@ export class StockDetailComponent implements OnInit {
 
         const sortedYears = Object.keys(groupedData).sort((a, b) => Number(a) - Number(b));
 
-        const dataSeries = sortedYears.map(year => {
+        const visibleYears = new Set(
+            sortedYears.slice(-3)
+        );
+
+        const dataSeries = sortedYears.map((year, index) => {
             const yearData = groupedData[Number(year)];
             const dataPoints = this.persianMonths.map((month, index) => {
                 const monthData = yearData.find(item => item.month === index + 1);
@@ -187,10 +203,14 @@ export class StockDetailComponent implements OnInit {
                 };
             });
 
+            const colorIndex = sortedYears.length - 1 - index;
+            const color = this.yearColors[colorIndex % this.yearColors.length]
             return {
                 type: "column",
                 name: year,
                 showInLegend: true,
+                visible: visibleYears.has(year),
+                color,
                 dataPoints: dataPoints
             };
         });

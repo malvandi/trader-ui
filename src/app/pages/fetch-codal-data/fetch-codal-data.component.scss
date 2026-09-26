@@ -31,8 +31,9 @@
         }
         
         &:nth-child(2),
-        &:nth-child(3) {
-          width: 200px;
+        &:nth-child(3),
+        &:nth-child(4) {
+          width: 160px;
           flex-shrink: 0;
         }
 
@@ -108,52 +109,57 @@
     }
   }
 
-  .table-container {
-    overflow-x: auto;
+  .progress-container {
+    margin-top: 20px;
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-top: 20px;
+    background-color: #fff;
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
+    mat-progress-bar {
+      margin: 12px 0 8px 0;
+    }
 
-      thead {
-        background-color: #f8f9fa;
+    .progress-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
 
-        th {
-          padding: 12px;
-          text-align: left;
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 13px;
+
+        .label {
           font-weight: 600;
-          color: #333;
-          border-bottom: 2px solid #dee2e6;
         }
-      }
 
-      tbody {
-        tr {
-          border-bottom: 1px solid #dee2e6;
-          transition: background-color 0.2s;
+        .value {
+          font-family: monospace;
+        }
 
-          &:hover {
-            background-color: #f8f9fa;
-          }
+        &.success {
+          background-color: #d4edda;
+          color: #155724;
+        }
 
-          td {
-            padding: 10px 12px;
-            color: #555;
+        &.error {
+          background-color: #f8d7da;
+          color: #721c24;
+        }
 
-            .url-link {
-              color: #007bff;
-              text-decoration: none;
-              word-break: break-all;
+        &.queue {
+          background-color: #fff3cd;
+          color: #856404;
+        }
 
-              &:hover {
-                text-decoration: underline;
-              }
-            }
-          }
+        &.total {
+          background-color: #e9ecef;
+          color: #495057;
         }
       }
     }
