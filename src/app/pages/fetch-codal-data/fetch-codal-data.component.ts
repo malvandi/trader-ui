@@ -321,7 +321,7 @@ export class FetchCodalDataComponent implements OnInit {
         const maxThreads = Math.max(1, Math.floor(this.threads || 1));
 
         while (this.activeCodalRequests < maxThreads) {
-            const nextItem = this.dataList.find(item => item.status === 'init');
+            const nextItem = this.dataList.reverse().find(item => item.status === 'init');
             if (!nextItem) {
                 break;
             }
