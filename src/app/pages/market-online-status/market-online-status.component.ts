@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from '../../../environments/environment';
+import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 
 interface StockGroup {
   name: string;
@@ -80,18 +81,22 @@ interface MarketOnlineFilter {
 @Component({
   selector: 'app-market-online-status',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        MatCardContent,
+        MatCard,
+        MatCardTitle,
+        MatCardHeader
+    ],
   templateUrl: './market-online-status.component.html',
   styleUrl: './market-online-status.component.scss'
 })
@@ -101,12 +106,12 @@ export class MarketOnlineStatusComponent implements OnInit {
   totalRecords = 0;
   isLoading = false;
   groups: StockGroup[] = [];
-  
+
   // Pagination
   currentPage = 0;
   pageSize = 30;
   totalPages = 0;
-  
+
   // Filters
   selectedGroups: string[] = [];
   humanPower: number | null = null;
@@ -123,7 +128,14 @@ export class MarketOnlineStatusComponent implements OnInit {
     { value: false, label: 'خیر' }
   ];
 
+  // Filter panel state
+  filtersExpanded = true;
+
   constructor(private http: HttpClient) {}
+
+  toggleFilters(): void {
+    this.filtersExpanded = !this.filtersExpanded;
+  }
 
   ngOnInit(): void {
     this.loadGroups();
@@ -144,7 +156,7 @@ export class MarketOnlineStatusComponent implements OnInit {
   loadMarketData(): void {
     this.isLoading = true;
     const filter = this.buildFilter();
-    
+
     this.http.post<MarketOnlineResponse>(`${environment.ktapi}/online-market`, filter).subscribe({
       next: (response) => {
         this.data = response.records;
@@ -224,6 +236,13 @@ export class MarketOnlineStatusComponent implements OnInit {
     return group ? group.translate : groupName;
   }
 
+  getSelectedGroupsDisplay(): string {
+    if (this.selectedGroups.length === 0) {
+      return 'همه گروه‌ها';
+    }
+    return this.selectedGroups.map(g => this.getGroupTranslate(g)).join(', ');
+  }
+
   formatNumber(value: number | undefined | null): string {
     if (value === undefined || value === null) {
       return '';
@@ -252,16 +271,23 @@ export class MarketOnlineStatusComponent implements OnInit {
     return value.toFixed(2);
   }
 
+  formatPeValue(value: number | undefined | null): string {
+    if (value === undefined || value === null || value <= 0) {
+      return '-';
+    }
+    return this.formatNumber(value);
+  }
+
   getPageNumbers(): number[] {
     const pages: number[] = [];
     const maxPagesToShow = 5;
     let startPage = Math.max(0, this.currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(this.totalPages - 1, startPage + maxPagesToShow - 1);
-    
+
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(0, endPage - maxPagesToShow + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
@@ -270,5 +296,9 @@ export class MarketOnlineStatusComponent implements OnInit {
 
   trackByTehranExchangeId(index: number, record: MarketRecord): string {
     return record.tehranExchangeId;
+  }
+
+  trackByFn(index: number, item: number): number {
+    return item;
   }
 }

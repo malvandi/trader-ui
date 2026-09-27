@@ -20,11 +20,33 @@
   margin-bottom: 24px;
   
   mat-card-header {
-    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
     
     mat-card-title {
       font-size: 16px;
       font-weight: 500;
+      margin: 0;
+    }
+    
+    .header-actions {
+      margin-left: 8px;
+    }
+  }
+  
+  mat-card-content {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    padding-top: 16px;
+    
+    .filters-card.collapsed & {
+      padding: 0 !important;
+      height: 0 !important;
+      opacity: 0;
+      visibility: hidden;
     }
   }
 }
@@ -34,12 +56,16 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   align-items: end;
+  padding-top: 16px;
   
   .filter-field {
     width: 100%;
+    min-width: 100px;
+    max-width: 300px;
     
     &.full-width {
       grid-column: 1 / -1;
+      max-width: 100%;
     }
   }
   
@@ -49,6 +75,33 @@
     justify-content: flex-start;
     margin-top: 8px;
   }
+}
+
+.toggle-filters-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  color: #333;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #e0e0e0;
+  }
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+}
+
+.filters-card.collapsed .toggle-filters-btn mat-icon {
+  transform: rotate(180deg);
 }
 
 .table-card {

@@ -4,18 +4,23 @@
   </div>
 
   <!-- Filters Section -->
-  <mat-card class="filters-card">
+  <mat-card class="filters-card" dir="rtl" [class.collapsed]="!filtersExpanded">
     <mat-card-header>
       <mat-card-title>فیلترها</mat-card-title>
+      <div class="header-actions">
+        <button mat-icon-button (click)="toggleFilters()" class="toggle-filters-btn" [attr.aria-expanded]="filtersExpanded" aria-label="Toggle filters">
+          <mat-icon>{{ filtersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+      </div>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content class="filters-content">
       <div class="filters-grid">
         <!-- Group Filter -->
-        <mat-form-field appearance="outline" class="filter-field full-width">
+        <mat-form-field appearance="outline" class="filter-field">
           <mat-label>گروه</mat-label>
           <mat-select [(ngModel)]="selectedGroups" (ngModelChange)="onFilterChange()" multiple>
             <mat-select-trigger>
-              {{ selectedGroups.length === 0 ? 'همه گروه‌ها' : selectedGroups.map(g => getGroupTranslate(g)).join(', ') }}
+              {{ getSelectedGroupsDisplay() }}
             </mat-select-trigger>
             @for (group of groups; track group.name) {
               <mat-option [value]="group.name">{{ group.translate }}</mat-option>
@@ -124,18 +129,18 @@
                   <td class="value-cell">{{ formatNumber(record.candle?.tradeValue) }}</td>
                   <td class="count-cell">{{ formatNumber(record.candle?.tradeCount) }}</td>
                   <td class="eps-cell">{{ formatNumber(record.eps) }}</td>
-                  <td class="pe-cell">{{ (record.pOnE ?? 0) > 0 ? formatNumber(record.pOnE) : '-' }}</td>
-                  <td class="group-pe-cell">{{ (record.groupPOnE ?? 0) > 0 ? formatNumber(record.groupPOnE) : '-' }}</td>
-                  <td class="analysis-cell" [class.negative]="record.analysis?.humanPower < 0" [class.positive]="record.analysis?.humanPower > 0">
+                  <td class="pe-cell">{{ formatPeValue(record.pOnE) }}</td>
+                  <td class="group-pe-cell">{{ formatPeValue(record.groupPOnE) }}</td>
+                  <td class="analysis-cell" [class.negative]="(record.analysis?.humanPower ?? 0) < 0" [class.positive]="(record.analysis?.humanPower ?? 0) > 0">
                     {{ formatAnalysisValue(record.analysis?.humanPower) }}
                   </td>
-                  <td class="analysis-cell" [class.negative]="record.analysis?.humanMoneyInflow < 0" [class.positive]="record.analysis?.humanMoneyInflow > 0">
+                  <td class="analysis-cell" [class.negative]="(record.analysis?.humanMoneyInflow ?? 0) < 0" [class.positive]="(record.analysis?.humanMoneyInflow ?? 0) > 0">
                     {{ formatAnalysisValue(record.analysis?.humanMoneyInflow) }}
                   </td>
-                  <td class="analysis-cell" [class.high]="record.analysis?.suspiciousTradingVolume > 1">
+                  <td class="analysis-cell" [class.high]="(record.analysis?.suspiciousTradingVolume ?? 0) > 1">
                     {{ formatAnalysisValue(record.analysis?.suspiciousTradingVolume) }}
                   </td>
-                  <td class="negative-days-cell" [class.high]="record.analysis?.negativeDays >= 3">
+                  <td class="negative-days-cell" [class.high]="(record.analysis?.negativeDays ?? 0) >= 3">
                     {{ record.analysis?.negativeDays ?? '-' }}
                   </td>
                   <td class="queue-cell">
@@ -160,47 +165,44 @@
         </div>
 
         <!-- Pagination -->
-        @if (totalPages > 1) {
-          <div class="pagination" *ngIf="totalPages > 1">
-            <button mat-icon-button (click)="onPageChange(0)" [disabled]="currentPage === 0" aria-label="First page">
-              <mat-icon>first_page</mat-icon>
-            </button>
-            <button mat-icon-button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" aria-label="Previous page">
-              <mat-icon>chevron_left</mat-icon>
-            </button>
-            
-            @for (page of getPageNumbers(); track page) {
-              <button mat-button 
-                      (click)="onPageChange(page)" 
-                      [class.active]="page === currentPage"
-                      class="page-btn">
-                {{ page + 1 }}
-              </button>
-            }
-            
-            <button mat-icon-button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1" aria-label="Next page">
-              <mat-icon>chevron_right</mat-icon>
-            </button>
-            <button mat-icon-button (click)="onPageChange(totalPages - 1)" [disabled]="currentPage >= totalPages - 1" aria-label="Last page">
-              <mat-icon>last_page</mat-icon>
-            </button>
-            
-            <div class="pagination-info">
-              صفحه {{ currentPage + 1 }} از {{ totalPages }} - کل {{ totalRecords }} رکورد
-            </div>
-            
-            <mat-form-field appearance="outline" class="page-size-select">
-              <mat-label>تعداد در صفحه</mat-label>
-              <mat-select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-                <mat-option [value]="10">10</mat-option>
-                <mat-option [value]="20">20</mat-option>
-                <mat-option [value]="30">30</mat-option>
-                <mat-option [value]="50">50</mat-option>
-                <mat-option [value]="100">100</mat-option>
-              </mat-select>
-            </mat-form-field>
+        <div class="pagination" *ngIf="totalPages > 1" dir="rtl">
+          <button mat-icon-button (click)="onPageChange(0)" [disabled]="currentPage === 0" aria-label="First page">
+            <mat-icon>first_page</mat-icon>
+          </button>
+          <button mat-icon-button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" aria-label="Previous page">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <button mat-button
+                  *ngFor="let page of getPageNumbers(); trackBy: trackByFn"
+                  (click)="onPageChange(page)"
+                  [class.active]="page === currentPage"
+                  class="page-btn">
+            {{ page + 1 }}
+          </button>
+
+          <button mat-icon-button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1" aria-label="Next page">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button mat-icon-button (click)="onPageChange(totalPages - 1)" [disabled]="currentPage >= totalPages - 1" aria-label="Last page">
+            <mat-icon>last_page</mat-icon>
+          </button>
+
+          <div class="pagination-info" dir="rtl">
+            صفحه {{ currentPage + 1 }} از {{ totalPages }} - کل {{ totalRecords }} رکورد
           </div>
-        }
+
+          <mat-form-field appearance="outline" class="page-size-select">
+            <mat-label>تعداد در صفحه</mat-label>
+            <mat-select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+              <mat-option [value]="10">10</mat-option>
+              <mat-option [value]="20">20</mat-option>
+              <mat-option [value]="30">30</mat-option>
+              <mat-option [value]="50">50</mat-option>
+              <mat-option [value]="100">100</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       }
     </mat-card-content>
   </mat-card>

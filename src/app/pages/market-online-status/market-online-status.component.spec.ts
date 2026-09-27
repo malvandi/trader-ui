@@ -132,7 +132,7 @@ describe('MarketOnlineStatusComponent', () => {
   it('should not include null/undefined values in filter', () => {
     component.selectedGroups = [];
     component.humanPower = null;
-    component.humanMoneyInflow = undefined;
+    component.humanMoneyInflow = null;
     component.suspiciousTradingVolume = null;
     component.isNegativeLast5Days = null;
     component.isBuyQueue = null;
@@ -191,7 +191,7 @@ describe('MarketOnlineStatusComponent', () => {
   it('should generate page numbers correctly', () => {
     component.totalPages = 10;
     component.currentPage = 4;
-    
+
     const pages = component.getPageNumbers();
     expect(pages).toEqual([2, 3, 4, 5, 6]);
   });
