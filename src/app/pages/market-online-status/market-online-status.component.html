@@ -13,7 +13,7 @@
         <!-- Group Filter -->
         <mat-form-field appearance="outline" class="filter-field full-width">
           <mat-label>گروه</mat-label>
-          <mat-select [formControl]="null" (selectionChange)="onFilterChange()" multiple>
+          <mat-select [(ngModel)]="selectedGroups" (ngModelChange)="onFilterChange()" multiple>
             <mat-select-trigger>
               {{ selectedGroups.length === 0 ? 'همه گروه‌ها' : selectedGroups.map(g => getGroupTranslate(g)).join(', ') }}
             </mat-select-trigger>
@@ -124,8 +124,8 @@
                   <td class="value-cell">{{ formatNumber(record.candle?.tradeValue) }}</td>
                   <td class="count-cell">{{ formatNumber(record.candle?.tradeCount) }}</td>
                   <td class="eps-cell">{{ formatNumber(record.eps) }}</td>
-                  <td class="pe-cell">{{ record.pOnE > 0 ? formatNumber(record.pOnE) : '-' }}</td>
-                  <td class="group-pe-cell">{{ record.groupPOnE > 0 ? formatNumber(record.groupPOnE) : '-' }}</td>
+                  <td class="pe-cell">{{ (record.pOnE ?? 0) > 0 ? formatNumber(record.pOnE) : '-' }}</td>
+                  <td class="group-pe-cell">{{ (record.groupPOnE ?? 0) > 0 ? formatNumber(record.groupPOnE) : '-' }}</td>
                   <td class="analysis-cell" [class.negative]="record.analysis?.humanPower < 0" [class.positive]="record.analysis?.humanPower > 0">
                     {{ formatAnalysisValue(record.analysis?.humanPower) }}
                   </td>
@@ -161,7 +161,7 @@
 
         <!-- Pagination -->
         @if (totalPages > 1) {
-          <div class="pagination">
+          <div class="pagination" *ngIf="totalPages > 1">
             <button mat-icon-button (click)="onPageChange(0)" [disabled]="currentPage === 0" aria-label="First page">
               <mat-icon>first_page</mat-icon>
             </button>
