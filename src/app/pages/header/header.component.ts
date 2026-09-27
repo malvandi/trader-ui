@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { SideNavComponent } from '../side-nav/side-nav.component';
 
 @Component({
@@ -14,8 +15,10 @@ export class HeaderComponent {
   currentPage = '';
 
   constructor(private router: Router) {
-    this.router.events.subscribe(() => {
-      const url = this.router.url;
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects || event.url;
       this.currentPage = this.getPageName(url);
     });
   }
@@ -25,6 +28,8 @@ export class HeaderComponent {
     if (url.includes('gain')) return 'Gain';
     if (url.includes('admin')) return 'Admin';
     if (url.includes('large-trades')) return 'Large Trades';
+    if (url.includes('market-online-status')) return 'Market Online Status';
+    if (url.includes('fetch-codal-data')) return 'Fetch Codal Data';
     return 'Activity Report';
   }
 

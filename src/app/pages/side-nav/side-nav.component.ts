@@ -14,7 +14,8 @@ export class SideNavComponent {
     { path: 'activity-report', label: 'Activity Report', icon: '📊' },
     { path: 'gain', label: 'Gain', icon: '💰' },
     { path: 'admin', label: 'Admin', icon: '⚙️' },
-    { path: 'large-trades', label: 'Large Trades', icon: '📈' }
+    { path: 'large-trades', label: 'Large Trades', icon: '📈' },
+    { path: 'market-online-status', label: 'Market Online Status', icon: '🌐' }
   ];
 
   constructor(public router: Router) {}
