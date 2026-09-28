@@ -35,7 +35,38 @@
         }
 
         .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin-left: 8px;
+        }
+
+        .preset-select-field {
+            width: 200px;
+            min-width: 180px;
+
+            .mat-mdc-form-field-flex {
+                background-color: white;
+            }
+        }
+
+        .save-preset-btn {
+            height: 36px;
+            width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background-color: #e8f5e9;
+                color: #388e3c;
+            }
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
         }
     }
 
@@ -368,6 +399,19 @@
 
 .clear-filters-btn {
     height: 36px;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .preset-select-field {
+        width: 100%;
+        order: -1;
+        margin-bottom: 8px;
+    }
 }
 
 @media (max-width: 768px) {

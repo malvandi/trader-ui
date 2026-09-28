@@ -9,12 +9,58 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { environment } from '../../../environments/environment';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
+
+const PRESETS_STORAGE_KEY = 'market-online-status-filter-presets';
 
 interface StockGroup {
   name: string;
   translate: string;
+}
+
+function getDefaultPresets(): FilterPreset[] {
+  return [
+    {
+      name: 'Project 1',
+      filters: {
+        humanPower: 2,
+        isBuyQueue: true,
+        isSellQueue: false
+      }
+    },
+    {
+      name: 'Project 2',
+      filters: {
+        humanMoneyInflow: 3,
+        suspiciousTradingVolume: 5
+      }
+    }
+  ];
+}
+
+function loadPresetsFromStorage(): FilterPreset[] {
+  try {
+    const stored = localStorage.getItem(PRESETS_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error loading presets from localStorage:', e);
+  }
+  return getDefaultPresets();
+}
+
+function savePresetsToStorage(presets: FilterPreset[]): void {
+  try {
+    localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presets));
+  } catch (e) {
+    console.error('Error saving presets to localStorage:', e);
+  }
 }
 
 interface CandleData {
@@ -78,6 +124,11 @@ interface MarketOnlineFilter {
   limit: number;
 }
 
+interface FilterPreset {
+  name: string;
+  filters: Partial<MarketOnlineFilter>;
+}
+
 @Component({
   selector: 'app-market-online-status',
   standalone: true,
@@ -92,6 +143,7 @@ interface MarketOnlineFilter {
         MatIconModule,
         MatProgressSpinnerModule,
         MatTooltipModule,
+        MatDialogModule,
         MatCardContent,
         MatCard,
         MatCardTitle,
@@ -131,7 +183,14 @@ export class MarketOnlineStatusComponent implements OnInit {
   // Filter panel state
   filtersExpanded = true;
 
-  constructor(private http: HttpClient) {}
+  // Filter Presets
+  projectFilters: FilterPreset[] = [];
+
+  selectedPreset: string | null = null;
+
+  constructor(private http: HttpClient, private dialog: MatDialog) {
+    this.projectFilters = loadPresetsFromStorage();
+  }
 
   toggleFilters(): void {
     this.filtersExpanded = !this.filtersExpanded;
@@ -140,6 +199,117 @@ export class MarketOnlineStatusComponent implements OnInit {
   ngOnInit(): void {
     this.loadGroups();
     this.loadMarketData();
+  }
+
+  applyPreset(presetName: string): void {
+    const preset = this.projectFilters.find(p => p.name === presetName);
+    if (!preset) return;
+
+    const filters = preset.filters;
+    
+    // Reset all filters first
+    this.clearFiltersWithoutReload();
+    
+    // Apply preset values
+    if (filters.group !== undefined) {
+      this.selectedGroups = filters.group || [];
+    }
+    if (filters.humanPower !== undefined) {
+      this.humanPower = filters.humanPower;
+    }
+    if (filters.humanMoneyInflow !== undefined) {
+      this.humanMoneyInflow = filters.humanMoneyInflow;
+    }
+    if (filters.suspiciousTradingVolume !== undefined) {
+      this.suspiciousTradingVolume = filters.suspiciousTradingVolume;
+    }
+    if (filters.isNegativeLast5Days !== undefined) {
+      this.isNegativeLast5Days = filters.isNegativeLast5Days;
+    }
+    if (filters.isBuyQueue !== undefined) {
+      this.isBuyQueue = filters.isBuyQueue;
+    }
+    if (filters.isSellQueue !== undefined) {
+      this.isSellQueue = filters.isSellQueue;
+    }
+
+    this.selectedPreset = presetName;
+    this.onFilterChange();
+  }
+
+  clearFiltersWithoutReload(): void {
+    this.selectedGroups = [];
+    this.humanPower = null;
+    this.humanMoneyInflow = null;
+    this.suspiciousTradingVolume = null;
+    this.isNegativeLast5Days = null;
+    this.isBuyQueue = null;
+    this.isSellQueue = null;
+    this.selectedPreset = null;
+  }
+
+  saveCurrentFiltersAsPreset(): void {
+    const name = prompt('نام پیش‌تنظیم جدید را وارد کنید:');
+    if (!name || !name.trim()) return;
+
+    const trimmedName = name.trim();
+    
+    // Check if preset with this name already exists
+    const existingIndex = this.projectFilters.findIndex(p => p.name === trimmedName);
+    
+    const currentFilters: Partial<MarketOnlineFilter> = {};
+    
+    if (this.selectedGroups.length > 0) {
+      currentFilters.group = [...this.selectedGroups];
+    }
+    if (this.humanPower !== null && this.humanPower !== undefined) {
+      currentFilters.humanPower = this.humanPower;
+    }
+    if (this.humanMoneyInflow !== null && this.humanMoneyInflow !== undefined) {
+      currentFilters.humanMoneyInflow = this.humanMoneyInflow;
+    }
+    if (this.suspiciousTradingVolume !== null && this.suspiciousTradingVolume !== undefined) {
+      currentFilters.suspiciousTradingVolume = this.suspiciousTradingVolume;
+    }
+    if (this.isNegativeLast5Days !== null) {
+      currentFilters.isNegativeLast5Days = this.isNegativeLast5Days;
+    }
+    if (this.isBuyQueue !== null) {
+      currentFilters.isBuyQueue = this.isBuyQueue;
+    }
+    if (this.isSellQueue !== null) {
+      currentFilters.isSellQueue = this.isSellQueue;
+    }
+
+    const newPreset: FilterPreset = {
+      name: trimmedName,
+      filters: currentFilters
+    };
+
+    if (existingIndex >= 0) {
+      this.projectFilters[existingIndex] = newPreset;
+    } else {
+      this.projectFilters.push(newPreset);
+    }
+
+    savePresetsToStorage(this.projectFilters);
+    this.selectedPreset = trimmedName;
+  }
+
+  onPresetSelectionChange(presetName: string): void {
+    if (presetName) {
+      this.applyPreset(presetName);
+    } else {
+      this.selectedPreset = null;
+    }
+  }
+
+  deletePreset(presetName: string): void {
+    this.projectFilters = this.projectFilters.filter(p => p.name !== presetName);
+    savePresetsToStorage(this.projectFilters);
+    if (this.selectedPreset === presetName) {
+      this.selectedPreset = null;
+    }
   }
 
   loadGroups(): void {
@@ -220,13 +390,7 @@ export class MarketOnlineStatusComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.selectedGroups = [];
-    this.humanPower = null;
-    this.humanMoneyInflow = null;
-    this.suspiciousTradingVolume = null;
-    this.isNegativeLast5Days = null;
-    this.isBuyQueue = null;
-    this.isSellQueue = null;
+    this.clearFiltersWithoutReload();
     this.currentPage = 0;
     this.loadMarketData();
   }

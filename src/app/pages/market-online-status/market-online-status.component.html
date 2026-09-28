@@ -8,6 +8,18 @@
         <mat-card-header>
             <mat-card-title>فیلترها</mat-card-title>
             <div class="header-actions">
+                <mat-form-field appearance="outline" class="preset-select-field">
+                    <mat-label>پیش‌تنظیم‌ها</mat-label>
+                    <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelectionChange($event.value)">
+                        <mat-option [value]="null">-- پیش‌تنظیم انتخاب کنید --</mat-option>
+                        @for (preset of projectFilters; track preset.name) {
+                            <mat-option [value]="preset.name">{{ preset.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <button mat-icon-button (click)="saveCurrentFiltersAsPreset()" class="save-preset-btn" matTooltip="ذخیره فیلترهای فعلی به عنوان پیش‌تنظیم جدید" aria-label="Save current filters as preset">
+                    <mat-icon>save</mat-icon>
+                </button>
                 <button mat-icon-button (click)="toggleFilters()" class="toggle-filters-btn"
                         [attr.aria-expanded]="filtersExpanded" aria-label="Toggle filters">
                     <mat-icon>{{ filtersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
