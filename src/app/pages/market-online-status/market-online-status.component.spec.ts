@@ -123,8 +123,8 @@ describe('MarketOnlineStatusComponent', () => {
     expect(filter.humanMoneyInflow).toBe(1.2);
     expect(filter.suspiciousTradingVolume).toBe(0.5);
     expect(filter.isNegativeLast5Days).toBe(true);
-    expect(filter.isBuyQueue_).toBe(false);
-    expect(filter.isSellQueue_).toBe(true);
+    expect(filter.isBuyQueue).toBe(false);
+    expect(filter.isSellQueue).toBe(true);
     expect(filter.page).toBe(1);
     expect(filter.limit).toBe(20);
   });
@@ -145,8 +145,8 @@ describe('MarketOnlineStatusComponent', () => {
     expect(filter.humanMoneyInflow).toBeUndefined();
     expect(filter.suspiciousTradingVolume).toBeUndefined();
     expect(filter.isNegativeLast5Days).toBeUndefined();
-    expect(filter.isBuyQueue_).toBeUndefined();
-    expect(filter.isSellQueue_).toBeUndefined();
+    expect(filter.isBuyQueue).toBeUndefined();
+    expect(filter.isSellQueue).toBeUndefined();
   });
 
   it('should reset to first page on filter change', () => {

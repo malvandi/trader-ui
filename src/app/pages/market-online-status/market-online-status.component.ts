@@ -72,8 +72,8 @@ interface MarketOnlineFilter {
   humanMoneyInflow?: number;
   suspiciousTradingVolume?: number;
   isNegativeLast5Days?: boolean;
-  isBuyQueue_?: boolean;
-  isSellQueue_?: boolean;
+  isBuyQueue?: boolean;
+  isSellQueue?: boolean;
   page: number;
   limit: number;
 }
@@ -193,10 +193,10 @@ export class MarketOnlineStatusComponent implements OnInit {
       filter.isNegativeLast5Days = this.isNegativeLast5Days;
     }
     if (this.isBuyQueue !== null) {
-      filter.isBuyQueue_ = this.isBuyQueue;
+      filter.isBuyQueue = this.isBuyQueue;
     }
     if (this.isSellQueue !== null) {
-      filter.isSellQueue_ = this.isSellQueue;
+      filter.isSellQueue = this.isSellQueue;
     }
 
     return filter;
