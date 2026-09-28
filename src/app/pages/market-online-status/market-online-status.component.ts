@@ -12,6 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { environment } from '../../../environments/environment';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { HtmlTooltipDirective } from '../../shared/html-tooltip/html-tooltip.directive';
 
 const PRESETS_STORAGE_KEY = 'market-online-status-filter-presets';
 
@@ -147,7 +149,9 @@ interface FilterPreset {
         MatCardContent,
         MatCard,
         MatCardTitle,
-        MatCardHeader
+        MatCardHeader,
+        OverlayModule,
+        HtmlTooltipDirective
     ],
   templateUrl: './market-online-status.component.html',
   styleUrl: './market-online-status.component.scss'
@@ -183,6 +187,10 @@ export class MarketOnlineStatusComponent implements OnInit {
   // Filter panel state
   filtersExpanded = true;
 
+  // Tooltip texts
+  humanPowerTooltip = '<strong>سرانه خرید/فروش حقیقی:</strong> تعداد سهم خرید/فروش تقسیم بر تعداد خریدار/فروشنده.<br>' +
+      '<strong>قدرت حقیقی:</strong> در صورتی که خریداران قویتری داشته باشد، از تقسیم سرانه خرید به سرانه فروش بدست می آید، در غیر اینصورت از تقسیم سرانه فروش به سرانه خرید همراه با یک منفی';
+
   // Filter Presets
   projectFilters: FilterPreset[] = [];
 
@@ -206,10 +214,10 @@ export class MarketOnlineStatusComponent implements OnInit {
     if (!preset) return;
 
     const filters = preset.filters;
-    
+
     // Reset all filters first
     this.clearFiltersWithoutReload();
-    
+
     // Apply preset values
     if (filters.group !== undefined) {
       this.selectedGroups = filters.group || [];
@@ -253,12 +261,12 @@ export class MarketOnlineStatusComponent implements OnInit {
     if (!name || !name.trim()) return;
 
     const trimmedName = name.trim();
-    
+
     // Check if preset with this name already exists
     const existingIndex = this.projectFilters.findIndex(p => p.name === trimmedName);
-    
+
     const currentFilters: Partial<MarketOnlineFilter> = {};
-    
+
     if (this.selectedGroups.length > 0) {
       currentFilters.group = [...this.selectedGroups];
     }

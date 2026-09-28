@@ -32,11 +32,6 @@
                 <mat-form-field appearance="outline" class="filter-field">
                     <mat-label>
                         گروه
-                        <button mat-icon-button type="button" class="help-icon"
-                                matTooltip="Select one or more industry groups to filter stocks. Leave empty to include all groups."
-                                matTooltipClass="help-tooltip" aria-label="Help for group filter">
-                            <mat-icon fontSize="small">help_outline</mat-icon>
-                        </button>
                     </mat-label>
                     <mat-select [(ngModel)]="selectedGroups" (ngModelChange)="onFilterChange()" multiple>
                         <mat-select-trigger>
@@ -53,8 +48,10 @@
                     <mat-label>
                         قدرت حقیقی
                         <button mat-icon-button type="button" class="help-icon"
-                                matTooltip="Filter by human trading power index. Higher values indicate stronger human buyer presence. Example: 2.5"
-                                matTooltipClass="help-tooltip" aria-label="Help for human power filter">
+                                [appHtmlTooltip]="humanPowerTooltip"
+                                tooltipClass="help-tooltip"
+                                position="bottom"
+                                aria-label="Help for human power filter">
                             <mat-icon fontSize="small">help_outline</mat-icon>
                         </button>
                     </mat-label>
