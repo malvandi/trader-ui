@@ -12,8 +12,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { environment } from '../../../environments/environment';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
-import { OverlayModule } from '@angular/cdk/overlay';
-import { HtmlTooltipDirective } from '../../shared/html-tooltip/html-tooltip.directive';
 
 const PRESETS_STORAGE_KEY = 'market-online-status-filter-presets';
 
@@ -149,9 +147,7 @@ interface FilterPreset {
         MatCardContent,
         MatCard,
         MatCardTitle,
-        MatCardHeader,
-        OverlayModule,
-        HtmlTooltipDirective
+        MatCardHeader
     ],
   templateUrl: './market-online-status.component.html',
   styleUrl: './market-online-status.component.scss'
@@ -188,8 +184,7 @@ export class MarketOnlineStatusComponent implements OnInit {
   filtersExpanded = true;
 
   // Tooltip texts
-  humanPowerTooltip = '<strong>سرانه خرید/فروش حقیقی:</strong> تعداد سهم خرید/فروش تقسیم بر تعداد خریدار/فروشنده.<br>' +
-      '<strong>قدرت حقیقی:</strong> در صورتی که خریداران قویتری داشته باشد، از تقسیم سرانه خرید به سرانه فروش بدست می آید، در غیر اینصورت از تقسیم سرانه فروش به سرانه خرید همراه با یک منفی';
+  humanPowerTooltip = 'سرانه خرید/فروش حقیقی: تعداد سهم خرید/فروش تقسیم بر تعداد خریدار/فروشنده.\nدر صورتی که خریداران قویتری داشته باشد، تقسیم';
 
   // Filter Presets
   projectFilters: FilterPreset[] = [];

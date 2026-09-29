@@ -485,7 +485,7 @@ mat-label {
     gap: 4px;
 }
 
-/* Keep styles for other matTooltip instances */
+/* Custom tooltip styling for help icons - Global styles to ensure they apply to tooltip overlay */
 ::ng-deep .help-tooltip.mat-mdc-tooltip,
 ::ng-deep .help-tooltip.mat-tooltip {
     background-color: #333 !important;
@@ -503,6 +503,7 @@ mat-label {
     font-weight: 600 !important;
 }
 
+/* Target the inner tooltip text element */
 ::ng-deep .help-tooltip .mat-mdc-tooltip-component,
 ::ng-deep .help-tooltip .mat-tooltip-component,
 ::ng-deep .help-tooltip .cdk-tooltip-content {
@@ -515,6 +516,7 @@ mat-label {
     display: none;
 }
 
+/* Fallback: Global style for any tooltip with help-tooltip class */
 @media all {
     .help-tooltip.mat-mdc-tooltip,
     .help-tooltip.mat-tooltip {
