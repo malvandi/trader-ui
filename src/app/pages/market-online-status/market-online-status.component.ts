@@ -291,7 +291,7 @@ export class MarketOnlineStatusComponent implements OnInit {
   ];
 
   // Filter panel state
-  filtersExpanded = true;
+  filtersExpanded = false;
 
   // Tooltip texts
   humanPowerTooltip = 'سرانه خرید/فروش حقیقی: تعداد سهم خرید/فروش تقسیم بر تعداد خریدار/فروشنده.\nدر صورتی که خریداران قویتری داشته باشد، تقسیم';
