@@ -44,3 +44,6 @@ Thumbs.db
 package-lock.json
 
 .aider-desk/
+
+.aider.input.history
+.aider*

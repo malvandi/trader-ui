@@ -1,0 +1,296 @@
+<div class="market-online-status-container">
+    <div class="page-header">
+        <h1>وضعیت آنلاین بازار</h1>
+    </div>
+
+    <!-- Filters Section -->
+    <mat-card class="filters-card" dir="rtl" [class.collapsed]="!filtersExpanded">
+        <mat-card-header>
+            <mat-card-title>فیلترها</mat-card-title>
+            <div class="header-actions">
+                <mat-form-field appearance="outline" class="preset-select-field">
+                    <mat-label>پیش‌تنظیم‌ها</mat-label>
+                    <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelectionChange($event.value)">
+                        <mat-option [value]="null">-- پیش‌تنظیم انتخاب کنید --</mat-option>
+                        @for (preset of projectFilters; track preset.name) {
+                            <mat-option [value]="preset.name">{{ preset.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <button mat-icon-button (click)="saveCurrentFiltersAsPreset()" class="save-preset-btn" matTooltip="ذخیره فیلترهای فعلی به عنوان پیش‌تنظیم جدید" aria-label="Save current filters as preset">
+                    <mat-icon>save</mat-icon>
+                </button>
+                <button mat-icon-button (click)="toggleFilters()" class="toggle-filters-btn"
+                        [attr.aria-expanded]="filtersExpanded" aria-label="Toggle filters">
+                    <mat-icon>{{ filtersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="filters-content">
+            <div class="filters-grid">
+                <!-- Group Filter -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        گروه
+                    </mat-label>
+                    <mat-select [(ngModel)]="selectedGroups" (ngModelChange)="onFilterChange()" multiple>
+                        <mat-select-trigger>
+                            {{ getSelectedGroupsDisplay() }}
+                        </mat-select-trigger>
+                        @for (group of groups; track group.name) {
+                            <mat-option [value]="group.name">{{ group.translate }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Human Power -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        قدرت حقیقی
+                        <button mat-icon-button type="button" class="help-icon"
+                                [matTooltip]="humanPowerTooltip"
+                                matTooltipClass="help-tooltip" aria-label="Help for human power filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <input matInput type="number" step="0.1" [(ngModel)]="humanPower" (ngModelChange)="onFilterChange()"
+                           placeholder="مثال: 2.5">
+                </mat-form-field>
+
+                <!-- Human Money Inflow -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        ورود پول حقیقی
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="Filter by human money inflow ratio. Positive values indicate net inflow of retail investor money. Example: 1.2"
+                                matTooltipClass="help-tooltip" aria-label="Help for human money inflow filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <input matInput type="number" step="0.1" [(ngModel)]="humanMoneyInflow"
+                           (ngModelChange)="onFilterChange()" placeholder="مثال: 1.2">
+                </mat-form-field>
+
+                <!-- Suspicious Trading Volume -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        حجم مشکوک
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="Filter by suspicious trading volume ratio. Values above 1 may indicate unusual or potentially manipulative activity. Example: 0.5"
+                                matTooltipClass="help-tooltip" aria-label="Help for suspicious trading volume filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <input matInput type="number" step="0.1" [(ngModel)]="suspiciousTradingVolume"
+                           (ngModelChange)="onFilterChange()" placeholder="مثال: 0.5">
+                </mat-form-field>
+
+                <!-- Is Negative Last 5 Days -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        5 روز اخیر منفی
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="Filter stocks that have closed negative in the last 5 trading days. Select 'Yes' to show only declining stocks."
+                                matTooltipClass="help-tooltip" aria-label="Help for negative last 5 days filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <mat-select [(ngModel)]="isNegativeLast5Days" (ngModelChange)="onFilterChange()">
+                        @for (option of booleanOptions; track option.value) {
+                            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Is Buy Queue -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        صف خرید
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="Filter stocks currently in buy queue (price at upper limit with unfilled buy orders). Select 'Yes' to show only stocks with buy queues."
+                                matTooltipClass="help-tooltip" aria-label="Help for buy queue filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <mat-select [(ngModel)]="isBuyQueue" (ngModelChange)="onFilterChange()">
+                        @for (option of booleanOptions; track option.value) {
+                            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Is Sell Queue -->
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>
+                        صف فروش
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="Filter stocks currently in sell queue (price at lower limit with unfilled sell orders). Select 'Yes' to show only stocks with sell queues."
+                                matTooltipClass="help-tooltip" aria-label="Help for sell queue filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <mat-select [(ngModel)]="isSellQueue" (ngModelChange)="onFilterChange()">
+                        @for (option of booleanOptions; track option.value) {
+                            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Clear Filters Button -->
+                <div class="filter-actions">
+                    <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
+                        <mat-icon>clear</mat-icon>
+                        پاک کردن فیلترها
+                    </button>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Table Section -->
+    <mat-card class="table-card">
+        <mat-card-content>
+            @if (isLoading) {
+                <div class="loading-container">
+                    <mat-spinner diameter="40"></mat-spinner>
+                    <p>در حال بارگذاری...</p>
+                </div>
+            } @else {
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <colgroup>
+                            <col class="col-code">
+                            <col class="col-name">
+                            <col class="col-group">
+                            <col class="col-price">
+                            <col class="col-volume">
+                            <col class="col-value">
+                            <col class="col-count">
+                            <col class="col-eps">
+                            <col class="col-pe">
+                            <col class="col-group-pe">
+                            <col class="col-human-power">
+                            <col class="col-human-money">
+                            <col class="col-suspicious">
+                            <col class="col-negative-days">
+                            <col class="col-buy-queue">
+                            <col class="col-sell-queue">
+                        </colgroup>
+                        <thead>
+                        <tr class="table-title">
+                            <th>نماد</th>
+                            <th>نام</th>
+                            <th>گروه</th>
+                            <th>قیمت آخرین معامله</th>
+                            <th>حجم</th>
+                            <th>ارزش معاملات</th>
+                            <th>تعداد معاملات</th>
+                            <th>EPS</th>
+                            <th>P/E</th>
+                            <th>P/E گروه</th>
+                            <th>قدرت حقیقی</th>
+                            <th>ورود پول حقیقی</th>
+                            <th>حجم مشکوک</th>
+                            <th>روزهای منفی</th>
+                            <th>صف خرید</th>
+                            <th>صف فروش</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            @for (record of data; track trackByTehranExchangeId($index, record)) {
+                                <tr>
+                                    <td class="code-cell">{{ record.code }}</td>
+                                    <td class="name-cell">{{ record.name }}</td>
+                                    <td class="group-cell">{{ getGroupTranslate(record.group) }}</td>
+                                    <td class="price-cell">{{ formatPrice(record.candle?.last) }}</td>
+                                    <td class="volume-cell">{{ formatVolume(record.candle?.volume) }}</td>
+                                    <td class="value-cell">{{ formatNumber(record.candle?.tradeValue) }}</td>
+                                    <td class="count-cell">{{ formatNumber(record.candle?.tradeCount) }}</td>
+                                    <td class="eps-cell">{{ formatNumber(record.eps) }}</td>
+                                    <td class="pe-cell">{{ formatPeValue(record.pOnE) }}</td>
+                                    <td class="group-pe-cell">{{ formatPeValue(record.groupPOnE) }}</td>
+                                    <td class="analysis-cell" [class.negative]="(record.analysis?.humanPower ?? 0) < 0"
+                                        [class.positive]="(record.analysis?.humanPower ?? 0) > 0">
+                                        {{ formatAnalysisValue(record.analysis?.humanPower) }}
+                                    </td>
+                                    <td class="analysis-cell"
+                                        [class.negative]="(record.analysis?.humanMoneyInflow ?? 0) < 0"
+                                        [class.positive]="(record.analysis?.humanMoneyInflow ?? 0) > 0">
+                                        {{ formatAnalysisValue(record.analysis?.humanMoneyInflow) }}
+                                    </td>
+                                    <td class="analysis-cell"
+                                        [class.high]="(record.analysis?.suspiciousTradingVolume ?? 0) > 1">
+                                        {{ formatAnalysisValue(record.analysis?.suspiciousTradingVolume) }}
+                                    </td>
+                                    <td class="negative-days-cell"
+                                        [class.high]="(record.analysis?.negativeDays ?? 0) >= 3">
+                                        {{ record.analysis?.negativeDays ?? '-' }}
+                                    </td>
+                                    <td class="queue-cell">
+                    <span class="queue-badge" [class.active]="record.analysis?.buyQueue">
+                      {{ record.analysis?.buyQueue ? 'بله' : 'خیر' }}
+                    </span>
+                                    </td>
+                                    <td class="queue-cell">
+                    <span class="queue-badge" [class.active]="record.analysis?.sellQueue">
+                      {{ record.analysis?.sellQueue ? 'بله' : 'خیر' }}
+                    </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (data.length === 0) {
+                                <tr>
+                                    <td colspan="16" class="no-data">داده‌ای یافت نشد</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" *ngIf="totalPages > 1" dir="rtl">
+                    <button mat-icon-button (click)="onPageChange(0)" [disabled]="currentPage === 0"
+                            aria-label="First page">
+                        <mat-icon>first_page</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0"
+                            aria-label="Previous page">
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+
+                    <button mat-button
+                            *ngFor="let page of getPageNumbers(); trackBy: trackByFn"
+                            (click)="onPageChange(page)"
+                            [class.active]="page === currentPage"
+                            class="page-btn">
+                        {{ page + 1 }}
+                    </button>
+
+                    <button mat-icon-button (click)="onPageChange(currentPage + 1)"
+                            [disabled]="currentPage >= totalPages - 1" aria-label="Next page">
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="onPageChange(totalPages - 1)"
+                            [disabled]="currentPage >= totalPages - 1" aria-label="Last page">
+                        <mat-icon>last_page</mat-icon>
+                    </button>
+
+                    <div class="pagination-info" dir="rtl">
+                        صفحه {{ currentPage + 1 }} از {{ totalPages }} - کل {{ totalRecords }} رکورد
+                    </div>
+
+                    <mat-form-field appearance="outline" class="page-size-select">
+                        <mat-label>تعداد در صفحه</mat-label>
+                        <mat-select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+                            <mat-option [value]="10">10</mat-option>
+                            <mat-option [value]="20">20</mat-option>
+                            <mat-option [value]="30">30</mat-option>
+                            <mat-option [value]="50">50</mat-option>
+                            <mat-option [value]="100">100</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>

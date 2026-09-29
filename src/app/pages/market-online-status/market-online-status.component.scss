@@ -1,0 +1,527 @@
+.market-online-status-container {
+    padding: 16px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    direction: rtl;
+}
+
+.page-header {
+    margin-bottom: 24px;
+
+    h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+        color: #333;
+    }
+}
+
+.filters-card {
+    margin-bottom: 24px;
+
+    mat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        padding-bottom: 0;
+
+        mat-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 8px;
+        }
+
+        .preset-select-field {
+            width: 200px;
+            min-width: 180px;
+
+            .mat-mdc-form-field-flex {
+                background-color: white;
+            }
+        }
+
+        .save-preset-btn {
+            height: 36px;
+            width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background-color: #e8f5e9;
+                color: #388e3c;
+            }
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
+    mat-card-content {
+        transition: all 0.3s ease;
+        overflow: hidden;
+        padding-top: 16px;
+
+        .filters-card.collapsed & {
+            padding: 0 !important;
+            height: 0 !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+    }
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    align-items: end;
+    padding-top: 16px;
+
+    .filter-field {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+
+        &.full-width {
+            grid-column: 1 / -1;
+        }
+    }
+
+    .filter-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+}
+
+.toggle-filters-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+    color: #333;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: #e0e0e0;
+    }
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+    }
+}
+
+.filters-card.collapsed .toggle-filters-btn mat-icon {
+    transform: rotate(180deg);
+}
+
+.table-card {
+    mat-card-content {
+        padding: 0;
+    }
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    gap: 16px;
+
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+
+    p {
+        margin: 0;
+        color: #666;
+    }
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    direction: rtl;
+    table-layout: fixed;
+
+    thead {
+        background-color: #f5f5f5;
+
+        th {
+            padding: 12px 8px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #fafafa;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        td {
+            padding: 10px 8px;
+            text-align: right;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .no-data {
+        text-align: center !important;
+        padding: 32px !important;
+        color: #999 !important;
+    }
+}
+
+// Column specific styles
+.code-cell {
+    //font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #1976d2;
+    width: 7%;
+    min-width: 70px;
+}
+
+.name-cell {
+    font-weight: 500;
+    width: 12%;
+    min-width: 100px;
+}
+
+.group-cell {
+    width: 10%;
+    min-width: 90px;
+    color: #555;
+}
+
+.price-cell,
+.volume-cell,
+.value-cell,
+.count-cell,
+.eps-cell,
+.pe-cell,
+.group-pe-cell {
+    //font-family: 'Courier New', monospace;
+    font-size: 11px;
+    width: 7%;
+    min-width: 70px;
+}
+
+.analysis-cell {
+    //font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 7%;
+    min-width: 65px;
+
+    &.negative {
+        color: #d32f2f;
+    }
+
+    &.positive {
+        color: #388e3c;
+    }
+
+    &.high {
+        color: #f57c00;
+        font-weight: 600;
+    }
+}
+
+.negative-days-cell {
+    //font-family: 'Courier New', monospace;
+    font-size: 11px;
+    width: 5%;
+    min-width: 55px;
+    text-align: center;
+
+    &.high {
+        color: #d32f2f;
+        font-weight: 600;
+    }
+}
+
+.queue-cell {
+    text-align: center;
+}
+
+// Column width definitions via colgroup
+.table-title {
+    font-size: 10px
+}
+
+.col-code {
+    width: 7%;
+    min-width: 70px;
+}
+
+.col-name {
+    width: 15%;
+    min-width: 130px;
+}
+
+.col-group {
+    width: 13%;
+    min-width: 130px;
+}
+
+.col-price,
+.col-volume,
+.col-value,
+.col-count,
+.col-eps,
+.col-pe,
+.col-group-pe {
+    width: 7%;
+    min-width: 70px;
+}
+
+.col-human-power,
+.col-human-money,
+.col-suspicious {
+    width: 7%;
+    min-width: 65px;
+}
+
+.col-negative-days {
+    width: 5%;
+    min-width: 60px;
+}
+
+.col-buy-queue,
+.col-sell-queue {
+    width: 60px;
+    min-width: 40px;
+    max-width: 60px;
+}
+
+.queue-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 500;
+    background-color: #f5f5f5;
+    color: #666;
+
+    &.active {
+        background-color: #e8f5e9;
+        color: #388e3c;
+    }
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid #e0e0e0;
+    background-color: #fafafa;
+
+    .page-btn {
+        min-width: 36px;
+        height: 36px;
+        line-height: 36px;
+        padding: 0 8px;
+
+        &.active {
+            background-color: #1976d2;
+            color: white;
+        }
+    }
+
+    .pagination-info {
+        margin: 0 16px;
+        font-size: 13px;
+        color: #666;
+        white-space: nowrap;
+    }
+
+    .page-size-select {
+        width: 140px;
+
+        .mat-mdc-form-field-flex {
+            background-color: white;
+        }
+    }
+}
+
+.clear-filters-btn {
+    height: 36px;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .preset-select-field {
+        width: 100%;
+        order: -1;
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .market-online-status-container {
+        padding: 8px;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .data-table {
+        font-size: 11px;
+
+        th,
+        td {
+            padding: 8px 4px;
+        }
+    }
+
+    .pagination {
+        gap: 4px;
+
+        .pagination-info {
+            margin: 0 8px;
+            font-size: 11px;
+        }
+
+        .page-size-select {
+            width: 120px;
+        }
+    }
+}
+
+/* Help icon styles */
+.help-icon {
+    margin-right: -8px;
+    margin-left: 4px;
+    color: #999;
+    vertical-align: middle;
+    line-height: 1;
+    padding: 0;
+    min-width: 24px;
+    height: 24px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+        opacity: 1;
+        color: #1976d2;
+        background-color: rgba(25, 118, 210, 0.08);
+    }
+
+    &:focus {
+        outline: none;
+        opacity: 1;
+        color: #1976d2;
+        background-color: rgba(25, 118, 210, 0.12);
+    }
+
+    mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+
+mat-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Custom tooltip styling for help icons - Global styles to ensure they apply to tooltip overlay */
+::ng-deep .help-tooltip.mat-mdc-tooltip,
+::ng-deep .help-tooltip.mat-tooltip {
+    background-color: #333 !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    max-width: 280px !important;
+    padding: 10px 12px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    direction: rtl;
+    text-align: right;
+    line-height: 1.5;
+    white-space: pre-wrap !important;
+    font-family: 'IRANSans', 'Vazirmatn', 'Tahoma', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+/* Target the inner tooltip text element */
+::ng-deep .help-tooltip .mat-mdc-tooltip-component,
+::ng-deep .help-tooltip .mat-tooltip-component,
+::ng-deep .help-tooltip .cdk-tooltip-content {
+    white-space: pre-wrap !important;
+    font-family: 'IRANSans', 'Vazirmatn', 'Tahoma', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+::ng-deep .help-tooltip .mat-tooltip-arrow {
+    display: none;
+}
+
+/* Fallback: Global style for any tooltip with help-tooltip class */
+@media all {
+    .help-tooltip.mat-mdc-tooltip,
+    .help-tooltip.mat-tooltip {
+        white-space: pre-wrap !important;
+        font-family: 'IRANSans', 'Vazirmatn', 'Tahoma', sans-serif !important;
+        font-weight: 600 !important;
+    }
+}

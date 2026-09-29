@@ -1,0 +1,116 @@
+<div class="table-container">
+  <div class="page-header">
+    <h1>معاملات درشت</h1>
+  </div>
+
+  <div class="filters" dir="rtl">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>نماد</mat-label>
+      <input matInput [(ngModel)]="uiFilters.code" placeholder="نماد را وارد کنید">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>حداقل مبلغ (میلیون تومان)</mat-label>
+      <input matInput type="number" [(ngModel)]="uiFilters.minAmount" placeholder="مبلغ را وارد کنید" step="100" min="0">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field date-field">
+      <mat-label>تاریخ از</mat-label>
+      <input matInput [matDatepicker]="fromPicker" [(ngModel)]="uiFilters.tradedAtFrom" placeholder="تاریخ را انتخاب کنید" readonly>
+      <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field date-field">
+      <mat-label>تاریخ تا</mat-label>
+      <input matInput [matDatepicker]="toPicker" [(ngModel)]="uiFilters.tradedAtTo" placeholder="تاریخ را انتخاب کنید" readonly>
+      <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>نوع معامله</mat-label>
+      <mat-select [(ngModel)]="uiFilters.type">
+        <mat-option *ngFor="let option of tradeTypeOptions" [value]="option.value">{{option.label}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="onFilterSubmit()" [disabled]="isLoading" class="submit-btn">
+      <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      <span *ngIf="!isLoading">اعمال فیلترها</span>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{errorMessage}}
+  </div>
+
+  <div *ngIf="isLoading && !records.length" class="table-loader">
+    <div class="spinner"></div>
+    <span>در حال بارگذاری...</span>
+  </div>
+
+  <table class="large-trades-table" [class.loading]="isLoading">
+    <thead>
+      <tr>
+        <th>نماد</th>
+        <th>نوع معامله</th>
+        <th>مبلغ (میلیون تومان)</th>
+        <th>حجم کل</th>
+        <th>تعداد معاملات</th>
+        <th>آخرین قیمت</th>
+        <th>تاریخ معامله</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of records; trackBy: trackById">
+        <td>{{record.code}}</td>
+        <td>
+          <span class="trade-type" [class.buy]="record.type === 'BUY'" [class.sell]="record.type === 'SELL'">
+            {{getTradeTypeLabel(record.type)}}
+          </span>
+        </td>
+        <td class="number-cell">{{formatAmount(record.amount)}}</td>
+        <td class="number-cell">{{formatNumber(record.totalVolume)}}</td>
+        <td class="number-cell">{{formatNumber(record.totalTradeCounts)}}</td>
+        <td class="number-cell">{{formatNumber(record.lastPrice)}}</td>
+        <td class="date-cell">{{formatDateTime(record.createdAt)}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoading && !records.length" class="empty-state">
+    هیچ داده‌ای یافت نشد
+  </div>
+
+  <div *ngIf="!isLoading && totalPages > 1" class="pagination">
+    <button mat-button (click)="onPageChange(0)" [disabled]="currentPage === 0" aria-label="صفحه اول">
+      ««
+    </button>
+    <button mat-button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" aria-label="صفحه قبلی">
+      «
+    </button>
+
+    <span class="page-numbers">
+      <button
+        mat-button
+        *ngFor="let page of pages"
+        (click)="onPageChange(page)"
+        [class.active]="currentPage === page"
+        [attr.aria-current]="currentPage === page ? 'page' : null">
+        {{page + 1}}
+      </button>
+    </span>
+
+    <button mat-button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages - 1" aria-label="صفحه بعد">
+      »
+    </button>
+    <button mat-button (click)="onPageChange(totalPages - 1)" [disabled]="currentPage === totalPages - 1" aria-label="صفحه آخر">
+      »»
+    </button>
+
+    <span class="pagination-info">
+      صفحه {{currentPage + 1}} از {{totalPages}} (مجموع {{totalRecords}} رکورد)
+    </span>
+  </div>
+</div>

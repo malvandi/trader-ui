@@ -1,0 +1,384 @@
+.table-container {
+  width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+  position: relative;
+  margin-bottom: 1rem;
+  display: block;
+  direction: rtl;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+    display: block !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    font-family: 'IRANSans', sans-serif;
+  }
+}
+
+.filters {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  direction: rtl;
+
+  ::ng-deep {
+    .mat-mdc-form-field {
+      width: 220px;
+    }
+
+    .mat-mdc-select-value {
+      font-family: 'iransansv', 'iransans', sans-serif;
+    }
+
+    .mat-mdc-select-panel {
+      font-family: 'iransansv', 'iransans', sans-serif;
+      direction: rtl;
+    }
+
+    .mat-mdc-option {
+      font-family: 'iransansv', 'iransans', sans-serif !important;
+      font-size: 14px;
+      direction: rtl;
+    }
+
+    .mdc-list-item__primary-text {
+      font-family: 'iransansv', 'iransans', sans-serif !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      direction: rtl;
+    }
+
+    .mat-mdc-form-field-infix {
+      direction: rtl;
+      text-align: right;
+    }
+
+    input[type="number"] {
+      direction: ltr;
+      text-align: left;
+    }
+
+    input[type="datetime-local"] {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .mat-mdc-form-field-suffix {
+      direction: rtl;
+    }
+  }
+}
+
+.filter-field {
+  min-width: 200px;
+  flex: 1 1 200px;
+
+  &.date-field {
+    min-width: 240px;
+  }
+}
+
+.submit-btn {
+  height: 48px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.table-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  span {
+    color: #666;
+    font-size: 14px;
+    font-family: 'IRANSans', sans-serif;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: #dc2626;
+  font-size: 14px;
+  font-family: 'IRANSans', sans-serif;
+  direction: rtl;
+}
+
+.large-trades-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+  font-family: 'IRANSans', sans-serif;
+  table-layout: fixed;
+  min-width: 1000px;
+  display: table;
+
+  &.loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  th, td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  td {
+    color: #334155;
+  }
+
+  // Symbol column
+  th:first-child,
+  td:first-child {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+    text-align: right;
+  }
+
+  // Type column
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+  }
+
+  // Amount column
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  // Total Volume column
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  // Trade Counts column
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  // Last Price column
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  // Date column
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    text-align: left;
+    direction: ltr;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  tr:hover {
+    background-color: #f1f5f9;
+  }
+
+  .trade-type {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+
+    &.buy {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    &.sell {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  .number-cell {
+    font-family: 'iransansv', 'iransans', 'Tahoma', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .date-cell {
+    font-family: 'iransansv', 'iransans', 'Tahoma', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-family: 'IRANSans', sans-serif;
+  font-size: 14px;
+  direction: rtl;
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  direction: rtl;
+
+  ::ng-deep {
+    .mat-mdc-button-base {
+      font-family: 'iransansv', 'iransans', sans-serif !important;
+      font-size: 13px;
+    }
+  }
+
+  .page-numbers {
+    display: flex;
+    gap: 0.25rem;
+
+    button {
+      min-width: 36px;
+      height: 36px;
+      line-height: 36px;
+      padding: 0 8px;
+
+      &.active {
+        background-color: #3b82f6;
+        color: white;
+
+        ::ng-deep {
+          .mdc-button__label {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination-info {
+    margin-right: 1rem;
+    font-size: 13px;
+    color: #64748b;
+    font-family: 'IRANSans', sans-serif;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding: 0.5rem;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    ::ng-deep {
+      .mat-mdc-form-field {
+        width: 100%;
+      }
+    }
+
+    .filter-field {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .pagination {
+    .pagination-info {
+      width: 100%;
+      text-align: center;
+      margin-right: 0;
+      margin-top: 0.5rem;
+    }
+  }
+}
