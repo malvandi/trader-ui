@@ -74,8 +74,10 @@
         transition: all 0.3s ease;
         overflow: hidden;
         padding-top: 16px;
+    }
 
-        .filters-card.collapsed & {
+    &.collapsed {
+        mat-card-content {
             padding: 0 !important;
             height: 0 !important;
             opacity: 0;
