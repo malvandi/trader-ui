@@ -118,7 +118,7 @@ describe('MarketOnlineStatusComponent', () => {
 
     const filter = component.buildFilter();
 
-    expect(filter.group).toEqual(['BASIC_METALS', 'COMPUTER']);
+    expect(filter.groups).toEqual(['BASIC_METALS', 'COMPUTER']);
     expect(filter.humanPower).toBe(2.5);
     expect(filter.humanMoneyInflow).toBe(1.2);
     expect(filter.suspiciousTradingVolume).toBe(0.5);
@@ -140,7 +140,7 @@ describe('MarketOnlineStatusComponent', () => {
 
     const filter = component.buildFilter();
 
-    expect(filter.group).toBeUndefined();
+    expect(filter.groups).toBeUndefined();
     expect(filter.humanPower).toBeUndefined();
     expect(filter.humanMoneyInflow).toBeUndefined();
     expect(filter.suspiciousTradingVolume).toBeUndefined();

@@ -9,16 +9,27 @@
             <mat-card-title>فیلترها</mat-card-title>
             <div class="header-actions">
                 <mat-form-field appearance="outline" class="preset-select-field">
-                    <mat-label>پیش‌تنظیم‌ها</mat-label>
-                    <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelectionChange($event.value)">
-                        <mat-option [value]="null">-- پیش‌تنظیم انتخاب کنید --</mat-option>
-                        @for (preset of projectFilters; track preset.name) {
-                            <mat-option [value]="preset.name">{{ preset.name }}</mat-option>
+                    <mat-label>پروژه‌ها</mat-label>
+                    <mat-select [(ngModel)]="selectedPreset" (selectionChange)="onPresetSelectionChange($event.value)" [disabled]="isLoadingProjects">
+                        <mat-option [value]="null">-- پروژه‌ای انتخاب کنید --</mat-option>
+                        @if (isLoadingProjects) {
+                          <mat-option disabled>
+                            <mat-spinner diameter="20"></mat-spinner>
+                            در حال بارگذاری پروژه‌ها...
+                          </mat-option>
+                        } @else if (projectsError) {
+                          <mat-option disabled>
+                            {{ projectsError }}
+                          </mat-option>
+                        } @else {
+                          @for (preset of projectFilters; track preset.name) {
+                              <mat-option [value]="preset.name">{{ preset.name }}</mat-option>
+                          }
                         }
                     </mat-select>
                 </mat-form-field>
-                <button mat-icon-button (click)="saveCurrentFiltersAsPreset()" class="save-preset-btn" matTooltip="ذخیره فیلترهای فعلی به عنوان پیش‌تنظیم جدید" aria-label="Save current filters as preset">
-                    <mat-icon>save</mat-icon>
+                <button mat-icon-button (click)="saveCurrentFiltersAsPreset()" class="save-preset-btn" matTooltip="ذخیره فیلترهای فعلی به عنوان پروژه جدید" aria-label="Save current filters as project" [disabled]="isLoadingProjects">
+                    <mat-icon>{{ isLoadingProjects ? 'hourglass_empty' : 'save' }}</mat-icon>
                 </button>
                 <button mat-icon-button (click)="toggleFilters()" class="toggle-filters-btn"
                         [attr.aria-expanded]="filtersExpanded" aria-label="Toggle filters">
@@ -83,6 +94,62 @@
                     </mat-label>
                     <input matInput type="number" step="0.1" [(ngModel)]="suspiciousTradingVolume"
                            (ngModelChange)="onFilterChange()" placeholder="مثال: 0.5">
+                </mat-form-field>
+
+                <!-- Code Filter -->
+                <mat-form-field appearance="outline" class="filter-field code-filter-field">
+                    <mat-label>
+                        نماد
+                        <button mat-icon-button type="button" class="help-icon"
+                                matTooltip="جستجو و انتخاب چند نماد. می‌توانید تا ۵۰+ نماد انتخاب کنید."
+                                matTooltipClass="help-tooltip" aria-label="Help for code filter">
+                            <mat-icon fontSize="small">help_outline</mat-icon>
+                        </button>
+                    </mat-label>
+                    <mat-chip-grid #chipGrid aria-label="نمادهای انتخاب شده">
+                        @for (code of selectedCodes; track code) {
+                            <mat-chip-row (removed)="removeCode(code)" removable>
+                                {{ code }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip-row>
+                        }
+                        <input
+                            #stockSearchInput
+                            placeholder="جستجوی نماد..."
+                            [matAutocomplete]="stockAuto"
+                            [matChipInputFor]="chipGrid"
+                            (input)="onStockSearch($event)"
+                            (matChipInputTokenEnd)="onStockSearch($event)"
+                            aria-label="جستجوی نماد"
+                            class="stock-search-input">
+                    </mat-chip-grid>
+                    <mat-autocomplete #stockAuto="matAutocomplete" (optionSelected)="onStockSelected($event)">
+                        @if (isLoadingStocks) {
+                            <mat-option disabled>
+                                <mat-spinner diameter="20"></mat-spinner>
+                                در حال جستجو...
+                            </mat-option>
+                        } @else if (stockSearchError) {
+                            <mat-option disabled>
+                                {{ stockSearchError }}
+                            </mat-option>
+                        } @else {
+                            @for (stock of filteredStocks | async; track stock.code) {
+                                <mat-option [value]="stock">
+                                    <span class="stock-option">
+                                        <span class="stock-code">{{ stock.code }}</span>
+                                        <span class="stock-name">{{ stock.name }}</span>
+                                    </span>
+                                </mat-option>
+                            }
+                            @if (!(filteredStocks | async)?.length && !isLoadingStocks && !stockSearchError) {
+                                <mat-option disabled>
+                                    نمادی یافت نشد
+                                </mat-option>
+                            }
+                        }
+                    </mat-autocomplete>
+                    <mat-hint>{{ getSelectedCodesDisplay() }}</mat-hint>
                 </mat-form-field>
 
                 <!-- Is Negative Last 5 Days -->
