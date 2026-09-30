@@ -59,7 +59,7 @@
                     <mat-label>
                         قدرت حقیقی
                         <button mat-icon-button type="button" class="help-icon"
-                                [matTooltip]="humanPowerTooltip"
+                                [matTooltip]="hints.humanPowerTooltip"
                                 matTooltipClass="help-tooltip" aria-label="Help for human power filter">
                             <mat-icon fontSize="small">help_outline</mat-icon>
                         </button>
@@ -73,7 +73,7 @@
                     <mat-label>
                         ورود پول حقیقی
                         <button mat-icon-button type="button" class="help-icon"
-                                matTooltip="Filter by human money inflow ratio. Positive values indicate net inflow of retail investor money. Example: 1.2"
+                                [matTooltip]="hints.humanMoneyInflow"
                                 matTooltipClass="help-tooltip" aria-label="Help for human money inflow filter">
                             <mat-icon fontSize="small">help_outline</mat-icon>
                         </button>
@@ -87,7 +87,7 @@
                     <mat-label>
                         حجم مشکوک
                         <button mat-icon-button type="button" class="help-icon"
-                                matTooltip="Filter by suspicious trading volume ratio. Values above 1 may indicate unusual or potentially manipulative activity. Example: 0.5"
+                                [matTooltip]="hints.suspiciousTradingVolume"
                                 matTooltipClass="help-tooltip" aria-label="Help for suspicious trading volume filter">
                             <mat-icon fontSize="small">help_outline</mat-icon>
                         </button>
@@ -157,7 +157,7 @@
                     <mat-label>
                         5 روز اخیر منفی
                         <button mat-icon-button type="button" class="help-icon"
-                                matTooltip="Filter stocks that have closed negative in the last 5 trading days. Select 'Yes' to show only declining stocks."
+                                [matTooltip]="hints.negativeLast5Days"
                                 matTooltipClass="help-tooltip" aria-label="Help for negative last 5 days filter">
                             <mat-icon fontSize="small">help_outline</mat-icon>
                         </button>
